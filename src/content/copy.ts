@@ -151,3 +151,28 @@ export const floatingCta = {
   label: "Solicitar orçamento",
   ariaLabel: "Solicitar orçamento pelo WhatsApp",
 };
+
+export const quoteWizard = {
+  heading: "Solicitar Orçamento",
+  intro: "Monte os detalhes do seu projeto em poucos passos para receber uma estimativa personalizada.",
+  stepCounter: (current: number, total: number) => `Passo ${current} de ${total}`,
+  backLabel: "Voltar",
+  nextLabel: "Avançar",
+  summaryHeading: "Resumo do seu projeto",
+  editLabel: "Editar",
+  submitLabel: "Solicitar orçamento",
+  colorAdviceTip: "O Reginaldo pode levar catálogos físicos e amostras de cores na visita técnica para ajudar você a definir a paleta ideal.",
+  colorAdviceLink: "Ver dicas de cores",
+  photoTip: "Dica: você também pode enviar fotos dos ambientes diretamente no WhatsApp com o Reginaldo após enviar a solicitação.",
+  disclaimer: "Esta solicitação não substitui uma avaliação do local. O orçamento final depende das condições reais da superfície, metragem, preparação necessária e materiais.",
+  labels: {
+    property: "Tipo de imóvel",
+    services: "Serviços",
+    size: "Área aproximada",
+    condition: "Estado atual",
+    preparation: "Preparação",
+    colors: "Cores",
+    contact: "Contato e Região",
+  },
+};
+
