@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Header from "../components/Header.astro";
+import Hero from "../components/Hero.astro";
+import ValueProposition from "../components/ValueProposition.astro";
+import Services from "../components/Services.astro";
+import Transformation from "../components/Transformation.astro";
+import WorkProcess from "../components/WorkProcess.astro";
+import Portfolio from "../components/Portfolio.astro";
+import WhyProfessional from "../components/WhyProfessional.astro";
+import ServiceAreas from "../components/ServiceAreas.astro";
+import Testimonials from "../components/Testimonials.astro";
+import Faq from "../components/Faq.astro";
+import FinalCta from "../components/FinalCta.astro";
+import Contact from "../components/Contact.astro";
+import Footer from "../components/Footer.astro";
+import FloatingWhatsapp from "../components/FloatingWhatsapp.astro";
+import { showTestimonialInvitation } from "../data/testimonials";
+import { testimonials } from "../data/testimonials";
+
+// Testimonials section is only mounted when there's something honest to
+// show — real reviews, or the invitation module (§11.9/§18).
+const showTestimonials = testimonials.length > 0 || showTestimonialInvitation;
+---
+
+<BaseLayout>
+  <Header />
+  <main id="conteudo-principal">
+    <Hero />
+    <ValueProposition />
+    <Services />
+    <Transformation />
+    <WorkProcess />
+    <Portfolio />
+    <WhyProfessional />
+    <ServiceAreas />
+    {showTestimonials && <Testimonials />}
+    <Faq />
+    <FinalCta />
+    <Contact />
+  </main>
+  <Footer />
+  <FloatingWhatsapp />
+</BaseLayout>

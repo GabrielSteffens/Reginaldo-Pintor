@@ -1,0 +1,129 @@
+---
+// Implements docs §13/§19. Appears once the visitor scrolls past the Hero
+// (never competes with the Hero's own CTA) and hides while #contato is in
+// view (never duplicates the action right in front of the visitor).
+import Icon from "./Icon.astro";
+import { floatingCta } from "../content/copy";
+---
+
+<a
+  href="#contato"
+  class="floating-cta"
+  data-floating-whatsapp
+  aria-label={floatingCta.ariaLabel}
+>
+  <Icon name="whatsapp" size={26} />
+  <span class="floating-cta__label">{floatingCta.label}</span>
+</a>
+
+<script>
+  import { whatsappHref } from "../utils/whatsapp";
+
+  const el = document.querySelector<HTMLAnchorElement>("[data-floating-whatsapp]");
+  const hero = document.querySelector<HTMLElement>("#topo");
+  // Hides over both #contato AND the Final CTA section — the Final CTA
+  // already puts its own full-width primary button in the same footprint
+  // the floating bar would occupy on mobile, so showing both is redundant
+  // and they can visually collide.
+  const suppressTargets = document.querySelectorAll<HTMLElement>("#contato, #cta-final");
+
+  if (el) {
+    el.href = whatsappHref("Olá! Gostaria de solicitar um orçamento.");
+
+    let pastHero = false;
+    let suppressedCount = 0;
+
+    const update = () => {
+      el.classList.toggle("floating-cta--visible", pastHero && suppressedCount === 0);
+    };
+
+    if (hero) {
+      const heroObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            pastHero = !entry.isIntersecting;
+            update();
+          });
+        },
+        { threshold: 0 }
+      );
+      heroObserver.observe(hero);
+    }
+
+    if (suppressTargets.length > 0) {
+      const seenState = new Map<Element, boolean>();
+      const suppressObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const wasIntersecting = seenState.get(entry.target) ?? false;
+            if (entry.isIntersecting !== wasIntersecting) {
+              seenState.set(entry.target, entry.isIntersecting);
+              suppressedCount += entry.isIntersecting ? 1 : -1;
+            }
+          });
+          update();
+        },
+        { threshold: 0.2 }
+      );
+      suppressTargets.forEach((target) => suppressObserver.observe(target));
+    }
+  }
+</script>
+
+<style>
+  .floating-cta {
+    position: fixed;
+    z-index: 90;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    text-decoration: none;
+    color: var(--color-surface);
+    background: var(--color-accent);
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity var(--motion-quick) var(--ease-reveal),
+      transform var(--motion-quick) var(--ease-reveal);
+  }
+
+  .floating-cta--visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .floating-cta__label {
+    display: none;
+  }
+
+  /* Mobile: full-width sticky bottom bar */
+  @media (max-width: 899px) {
+    .floating-cta {
+      left: 0;
+      right: 0;
+      bottom: 0;
+      justify-content: center;
+      padding: 0.9em;
+      box-shadow: var(--shadow-warm);
+    }
+
+    .floating-cta__label {
+      display: inline;
+      font-weight: 500;
+    }
+  }
+
+  /* Desktop: circular floating action button */
+  @media (min-width: 900px) {
+    .floating-cta {
+      right: var(--space-3);
+      bottom: var(--space-3);
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-pill);
+      justify-content: center;
+      box-shadow: var(--shadow-warm);
+    }
+  }
+</style>

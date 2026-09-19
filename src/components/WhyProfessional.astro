@@ -1,0 +1,61 @@
+---
+// Implements docs §11.7 — handles the DIY/cheapest-option objection
+// factually, without attacking competitors. All copy lives in
+// src/content/copy.ts (whyProfessional).
+import { whyProfessional } from "../content/copy";
+
+const { heading, intro, points, linkLabel } = whyProfessional;
+---
+
+<section class="section why-professional">
+  <div class="container">
+    <div class="section-intro">
+      <h2>{heading}</h2>
+      <p>{intro}</p>
+    </div>
+
+    <ul class="why-professional__list">
+      {points.map((p) => (
+        <li>
+          <h3>{p.title}</h3>
+          <p>{p.text}</p>
+        </li>
+      ))}
+    </ul>
+
+    <a class="why-professional__link" href="#processo">{linkLabel}</a>
+  </div>
+</section>
+
+<style>
+  .why-professional__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .why-professional__list h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.3em;
+  }
+
+  .why-professional__list p {
+    font-size: var(--size-small);
+  }
+
+  .why-professional__link {
+    display: inline-block;
+    margin-top: var(--space-3);
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  @media (min-width: 700px) {
+    .why-professional__list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

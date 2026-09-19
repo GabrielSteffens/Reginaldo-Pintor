@@ -1,0 +1,53 @@
+---
+// Implements docs §11.11 / §19 — the one full-bleed accent section,
+// reserved for the site's second and last bold visual moment.
+import CtaButton from "./CtaButton.astro";
+import { finalCta } from "../content/copy";
+---
+
+<section id="cta-final" class="section section--accent final-cta">
+  <div class="container final-cta__inner">
+    <h2>{finalCta.headline}</h2>
+    <p>{finalCta.subtext}</p>
+    <CtaButton variant="primary" label={finalCta.ctaLabel} whatsappMessage="Olá! Gostaria de solicitar um orçamento gratuito." class="final-cta__btn" />
+  </div>
+</section>
+
+<style>
+  .final-cta {
+    padding-block: var(--space-5);
+  }
+
+  @media (min-width: 900px) {
+    .final-cta {
+      padding-block: var(--space-6);
+    }
+  }
+
+  .final-cta__inner {
+    text-align: center;
+    max-width: 36rem;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .final-cta__inner p {
+    max-width: 42ch;
+  }
+
+  .final-cta__btn {
+    margin-top: var(--space-2);
+  }
+
+  .final-cta :global(.btn--primary) {
+    background: var(--color-surface);
+    color: var(--color-accent);
+  }
+
+  .final-cta :global(.btn--primary:hover),
+  .final-cta :global(.btn--primary:focus-visible) {
+    background: rgba(251, 249, 245, 0.85);
+  }
+</style>

@@ -1,0 +1,179 @@
+---
+// Implements docs §16 — the paint-fill progress rail replacing a generic
+// numbered-circle process diagram.
+import { processSteps, processIntro } from "../data/process";
+import { workProcess } from "../content/copy";
+import Icon from "./Icon.astro";
+
+const steps = [...processSteps].sort((a, b) => a.order - b.order);
+const intro = processIntro.useConfirmed ? processIntro.confirmed : processIntro.generic;
+---
+
+<section id="processo" class="section section--surface work-process">
+  <div class="container">
+    <div class="section-intro">
+      <h2>{workProcess.heading}</h2>
+      <p>{intro}</p>
+    </div>
+
+    <ol class="process" data-process-rail>
+      <span class="process__track" aria-hidden="true">
+        <span class="process__fill" data-process-fill></span>
+      </span>
+
+      {steps.map((step) => (
+        <li class="process__step" data-process-step>
+          <span class="process__marker" data-process-marker aria-hidden="true"></span>
+          <div class="process__body">
+            <div class="process__title">
+              <Icon name={step.icon === "phone" ? "phone" : step.icon === "clipboard" ? "clipboard" : step.icon === "tape" ? "tape" : step.icon === "roller" ? "roller" : step.icon === "brush" ? "brush" : "check"} size={20} />
+              <h3>{step.title}</h3>
+            </div>
+            <p>{step.shortDescription}</p>
+            {step.detail && (
+              <ul class="process__detail">
+                {step.detail.map((d) => <li>{d}</li>)}
+              </ul>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<script>
+  const steps = document.querySelectorAll<HTMLElement>("[data-process-step]");
+  const fill = document.querySelector<HTMLElement>("[data-process-fill]");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (steps.length && fill) {
+    if (reduceMotion) {
+      fill.style.height = "100%";
+      fill.style.width = "100%";
+      steps.forEach((s) => s.classList.add("process__step--reached"));
+    } else {
+      const total = steps.length;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const index = Array.from(steps).indexOf(entry.target as HTMLElement);
+            if (entry.isIntersecting) {
+              entry.target.classList.add("process__step--reached");
+              const pct = ((index + 1) / total) * 100;
+              // Height drives the mobile vertical rail, width drives the
+              // desktop horizontal one — only the relevant property is
+              // visible at each breakpoint (§16).
+              fill.style.height = `${pct}%`;
+              fill.style.width = `${pct}%`;
+            }
+          });
+        },
+        { threshold: 0.5, rootMargin: "0px 0px -20% 0px" }
+      );
+      steps.forEach((s) => observer.observe(s));
+    }
+  }
+</script>
+
+<style>
+  .process {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    padding-left: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .process__track {
+    position: absolute;
+    left: 0.9rem;
+    top: 0.4rem;
+    bottom: 0.4rem;
+    width: 2px;
+    background: var(--color-line);
+  }
+
+  .process__fill {
+    display: block;
+    width: 100%;
+    height: 0%;
+    background: var(--color-accent);
+    transition: height var(--motion-reveal) var(--ease-reveal);
+  }
+
+  .process__step {
+    position: relative;
+  }
+
+  .process__marker {
+    position: absolute;
+    left: calc(-1 * var(--space-5) + 0.55rem);
+    top: 0.15rem;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 1.5px solid var(--color-line);
+    background: var(--color-surface);
+    transition: background-color var(--motion-instant) var(--ease-reveal),
+      border-color var(--motion-instant) var(--ease-reveal);
+  }
+
+  .process__step--reached .process__marker {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .process__title {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    color: var(--color-accent);
+  }
+
+  .process__title h3 {
+    margin: 0;
+    color: var(--color-ink);
+  }
+
+  .process__detail {
+    margin: 0.6em 0 0;
+    padding-left: 1.1em;
+    font-size: var(--size-small);
+  }
+
+  @media (min-width: 900px) {
+    .process {
+      flex-direction: row;
+      padding-left: 0;
+      padding-top: var(--space-5);
+      gap: var(--space-3);
+    }
+
+    .process__track {
+      left: 0;
+      right: 0;
+      top: 0.4rem;
+      bottom: auto;
+      height: 2px;
+      width: auto;
+    }
+
+    .process__fill {
+      height: 100%;
+      width: 0%;
+      transition: width var(--motion-reveal) var(--ease-reveal);
+    }
+
+    .process__step {
+      flex: 1;
+    }
+
+    .process__marker {
+      left: 0.05rem;
+      top: -1.55rem;
+    }
+  }
+</style>

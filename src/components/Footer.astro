@@ -1,0 +1,130 @@
+---
+// Implements docs §11.13 — the one place the palette inverts. Social
+// links render only once real profiles exist (empty object = nothing shown).
+import { businessConfig } from "../config/business";
+import { telHref } from "../utils/whatsapp";
+
+const { businessName, tagline, phone, email, city, neighborhoods, socialLinks, logo } = businessConfig;
+const phoneLink = telHref();
+const socials = Object.entries(socialLinks).filter(([, url]) => Boolean(url));
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div>
+      {logo.src ? (
+        <img src={logo.src} alt={logo.alt} class="footer__logo" width="220" height="65" />
+      ) : (
+        <p class="footer__brand">{businessName}</p>
+      )}
+      <p class="footer__tagline">{tagline}</p>
+    </div>
+
+    <div>
+      <h3 class="footer__heading">Contato</h3>
+      <ul class="footer__list">
+        {phoneLink && <li><a href={phoneLink}>{phone}</a></li>}
+        {email && <li><a href={`mailto:${email}`}>{email}</a></li>}
+        {city && <li>{city}</li>}
+      </ul>
+    </div>
+
+    {neighborhoods.length > 0 && (
+      <div>
+        <h3 class="footer__heading">Atendemos</h3>
+        <p>{neighborhoods.join(", ")}</p>
+      </div>
+    )}
+
+    {socials.length > 0 && (
+      <div>
+        <h3 class="footer__heading">Redes sociais</h3>
+        <ul class="footer__list">
+          {socials.map(([name, url]) => (
+            <li><a href={url as string}>{name}</a></li>
+          ))}
+        </ul>
+      </div>
+    )}
+  </div>
+
+  <div class="container footer__bottom">
+    <p>© {year} {businessName}</p>
+    <a href="#contato">Solicitar orçamento</a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--color-ink);
+    color: var(--color-surface);
+    padding-block: var(--space-5) var(--space-3);
+  }
+
+  .footer__grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .footer__brand {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    margin-bottom: 0.3em;
+  }
+
+  .footer__logo {
+    display: block;
+    height: 40px;
+    width: auto;
+    margin-bottom: 0.6em;
+  }
+
+  .footer__tagline {
+    color: rgba(251, 249, 245, 0.7);
+    max-width: 30ch;
+  }
+
+  .footer__heading {
+    font-family: var(--font-body);
+    font-size: var(--size-small);
+    font-weight: 600;
+    margin-bottom: 0.6em;
+    color: var(--color-surface);
+  }
+
+  .footer__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.4em;
+  }
+
+  .footer__list a {
+    text-decoration: none;
+    color: rgba(251, 249, 245, 0.85);
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: 1px solid rgba(251, 249, 245, 0.15);
+    font-size: var(--size-small);
+    color: rgba(251, 249, 245, 0.7);
+  }
+
+  .footer__bottom a {
+    color: rgba(251, 249, 245, 0.85);
+  }
+
+  @media (min-width: 700px) {
+    .footer__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

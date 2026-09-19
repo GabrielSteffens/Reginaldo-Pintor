@@ -1,0 +1,122 @@
+---
+// Implements docs §17. Never hidden even at zero real projects — shows the
+// real category structure honestly labeled "em breve" instead of faking
+// project cards.
+import { portfolioProjects, portfolioCategoryShells } from "../data/portfolio";
+import { whatsappHref } from "../utils/whatsapp";
+import { portfolio as portfolioCopy } from "../content/copy";
+import SwatchPanel from "./SwatchPanel.astro";
+
+const projects = [...portfolioProjects].sort((a, b) => a.order - b.order);
+const isEmpty = projects.length === 0;
+---
+
+<section id="portfolio" class="section portfolio">
+  <div class="container">
+    <div class="section-intro">
+      <h2>{portfolioCopy.heading}</h2>
+      <p>{isEmpty ? portfolioCopy.introEmpty : portfolioCopy.introPopulated}</p>
+    </div>
+
+    {isEmpty ? (
+      <>
+        <div class="portfolio__grid">
+          {portfolioCategoryShells.map((cat) => (
+            <div class="portfolio-shell">
+              <SwatchPanel color={cat.id === "interior" ? "accent" : "accentOchre"} ratio="4 / 5">
+                <span class="portfolio-shell__label">Em breve</span>
+              </SwatchPanel>
+              <h3>{cat.label}</h3>
+            </div>
+          ))}
+        </div>
+        <a class="portfolio__cta" href={whatsappHref("Quero ver um exemplo do trabalho antes de decidir.")}>
+          {portfolioCopy.emptyCtaLabel}
+        </a>
+      </>
+    ) : (
+      <div class="portfolio__grid">
+        {projects.map((project) => (
+          // Plain figure, not a link: there's no project detail page/lightbox
+          // built yet, so this never becomes a dead `href="#"` once real
+          // projects are added. Wire this up to an actual destination (a
+          // lightbox or a /portfolio/[slug] route) when that's built.
+          <figure class="portfolio-card">
+            <img src={project.coverImage} alt={project.title} loading="lazy" />
+            <figcaption class="portfolio-card__caption">
+              <h3>{project.title}</h3>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .portfolio__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+  }
+
+  .portfolio-shell h3 {
+    margin-top: 0.6em;
+    font-size: var(--size-h3);
+  }
+
+  .portfolio-shell__label {
+    font-size: var(--size-small);
+    background: rgba(251, 249, 245, 0.15);
+    padding: 0.3em 0.8em;
+    border-radius: var(--radius-sharp);
+  }
+
+  .portfolio__cta {
+    display: inline-block;
+    margin-top: var(--space-4);
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .portfolio-card {
+    display: block;
+    position: relative;
+    margin: 0;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-frame);
+    overflow: hidden;
+    box-shadow: none;
+    transition: box-shadow var(--motion-instant) var(--ease-reveal);
+  }
+
+  .portfolio-card:hover {
+    box-shadow: var(--shadow-warm);
+  }
+
+  .portfolio-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .portfolio-card__caption {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: var(--space-2);
+    background: linear-gradient(to top, rgba(42, 36, 32, 0.55), transparent);
+    color: var(--color-surface);
+  }
+
+  .portfolio-card__caption h3 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  @media (min-width: 700px) {
+    .portfolio__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

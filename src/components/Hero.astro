@@ -1,0 +1,194 @@
+---
+// Implements docs §13. The split-panel transformation motif with a
+// one-time load reveal — the site's single most orchestrated motion.
+import { businessConfig } from "../config/business";
+import { hero } from "../content/copy";
+import CtaButton from "./CtaButton.astro";
+
+const headline = hero.headlineOverride ?? businessConfig.tagline;
+---
+
+<section id="topo" class="hero">
+  <div class="hero__panels" aria-hidden="true">
+    <div class="hero__panel hero__panel--before"></div>
+    <div class="hero__panel hero__panel--after"></div>
+  </div>
+
+  <div class="container hero__content">
+    <h1 class="hero__headline">{headline}</h1>
+    <p class="hero__subtext">{hero.subtext}</p>
+    <div class="hero__ctas">
+      <CtaButton variant="primary" label={hero.primaryCta} whatsappMessage="Olá! Gostaria de solicitar um orçamento gratuito." />
+      <CtaButton variant="secondary" label={hero.secondaryCta} href="#servicos" />
+    </div>
+  </div>
+
+  <a href="#valor" class="hero__scroll-cue" aria-label="Rolar para ver mais">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  </a>
+</section>
+
+<script>
+  const cue = document.querySelector<HTMLElement>(".hero__scroll-cue");
+  let dismissed = false;
+
+  const dismiss = () => {
+    if (dismissed || !cue) return;
+    dismissed = true;
+    cue.classList.add("hero__scroll-cue--hidden");
+    window.removeEventListener("scroll", dismiss);
+  };
+
+  window.addEventListener("scroll", dismiss, { passive: true });
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 90svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+  }
+
+  .hero__panels {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero__panel {
+    width: 100%;
+  }
+
+  .hero__panel--before {
+    background-color: var(--color-putty);
+    height: 20%;
+    animation: hero-reveal-before var(--motion-hero) var(--ease-reveal) both;
+  }
+
+  .hero__panel--after {
+    background-color: var(--color-accent);
+    height: 80%;
+    animation: hero-reveal-after var(--motion-hero) var(--ease-reveal) both;
+  }
+
+  @keyframes hero-reveal-before {
+    from {
+      transform: translateY(-100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes hero-reveal-after {
+    from {
+      transform: translateY(-20%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .hero__content {
+    position: relative;
+    padding-block: var(--space-5) var(--space-6);
+    color: var(--color-surface);
+  }
+
+  .hero__headline {
+    max-width: 14ch;
+    margin-bottom: var(--space-3);
+  }
+
+  .hero__subtext {
+    max-width: 40ch;
+    color: var(--color-surface);
+    opacity: 0.92;
+  }
+
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .hero__ctas :global(.btn--secondary) {
+    border-color: var(--color-surface);
+    color: var(--color-surface);
+  }
+
+  .hero__scroll-cue {
+    position: absolute;
+    bottom: var(--space-3);
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--color-surface);
+    opacity: 0.85;
+    transition: opacity var(--motion-quick) var(--ease-reveal);
+  }
+
+  .hero__scroll-cue--hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      min-height: 92svh;
+    }
+
+    .hero__panels {
+      flex-direction: row;
+    }
+
+    .hero__panel {
+      height: 100%;
+    }
+
+    .hero__panel--before {
+      width: 38%;
+      clip-path: polygon(0 0, 100% 0, 82% 100%, 0 100%);
+      animation-name: hero-reveal-before-desktop;
+    }
+
+    .hero__panel--after {
+      width: 100%;
+      margin-left: -12%;
+      animation-name: hero-reveal-after-desktop;
+    }
+
+    @keyframes hero-reveal-before-desktop {
+      from {
+        transform: translateX(-100%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes hero-reveal-after-desktop {
+      from {
+        transform: translateX(20%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .hero__content {
+      max-width: 34rem;
+      padding-block: var(--space-6);
+    }
+  }
+</style>

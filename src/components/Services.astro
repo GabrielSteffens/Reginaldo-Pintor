@@ -1,0 +1,156 @@
+---
+// Implements docs §14 — the data-driven services catalog with a featured
+// tile + flexible grid, instead of a uniform SaaS card kit.
+import { enabledServices } from "../data/services";
+import { whatsappHref } from "../utils/whatsapp";
+import { services as servicesCopy } from "../content/copy";
+import Icon from "./Icon.astro";
+import SwatchPanel from "./SwatchPanel.astro";
+
+const items = enabledServices();
+const featured = items.find((s) => s.featured) ?? items[0];
+const rest = items.filter((s) => s.id !== featured?.id);
+---
+
+<section id="servicos" class="section services">
+  <div class="container">
+    <div class="section-intro">
+      <h2>{servicesCopy.heading}</h2>
+      <p>{servicesCopy.intro}</p>
+    </div>
+
+    <div class="services__grid">
+      {featured && (
+        <a class="service-card service-card--featured" href={whatsappHref(`Quero orçamento para ${featured.title.toLowerCase()}.`)} data-reveal>
+          <SwatchPanel color={featured.swatchColor} ratio="16 / 10">
+            <Icon name={featured.icon} size={40} />
+          </SwatchPanel>
+          <div class="service-card__body">
+            <h3>{featured.title}</h3>
+            <p>{featured.shortDescription}</p>
+            {featured.details && (
+              <ul class="service-card__details">
+                {featured.details.map((d) => <li>{d}</li>)}
+              </ul>
+            )}
+            <span class="service-card__cta">Quero orçamento para {featured.title.toLowerCase()}</span>
+          </div>
+        </a>
+      )}
+
+      <div class="services__rest">
+        {rest.map((service) => (
+          <a class="service-card" href={whatsappHref(`Quero orçamento para ${service.title.toLowerCase()}.`)}>
+            <SwatchPanel color={service.swatchColor} ratio="4 / 3">
+              <Icon name={service.icon} size={28} />
+            </SwatchPanel>
+            <div class="service-card__body">
+              <h3>{service.title}</h3>
+              <p>{service.shortDescription}</p>
+              <span class="service-card__cta">Quero orçamento para {service.title.toLowerCase()}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const featured = document.querySelector<HTMLElement>("[data-reveal]");
+  if (featured && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            featured.classList.add("service-card--revealed");
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(featured);
+  } else {
+    featured?.classList.add("service-card--revealed");
+  }
+</script>
+
+<style>
+  .services__grid {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .services__rest {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .service-card {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .service-card__body {
+    padding-top: var(--space-2);
+  }
+
+  .service-card__body h3 {
+    margin-bottom: 0.35em;
+  }
+
+  .service-card__details {
+    margin: 0.75em 0 0;
+    padding-left: 1.1em;
+    font-size: var(--size-small);
+  }
+
+  .service-card__cta {
+    display: inline-block;
+    margin-top: 0.75em;
+    font-size: var(--size-small);
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .service-card :global(.swatch-panel) {
+    transition: filter var(--motion-instant) var(--ease-reveal);
+  }
+
+  .service-card:hover :global(.swatch-panel),
+  .service-card:focus-visible :global(.swatch-panel) {
+    filter: brightness(0.92);
+  }
+
+  .service-card--featured :global(.swatch-panel) {
+    transform: scale(0.98);
+    filter: saturate(0.7);
+    transition: transform var(--motion-reveal) var(--ease-reveal),
+      filter var(--motion-reveal) var(--ease-reveal);
+  }
+
+  .service-card--featured.service-card--revealed :global(.swatch-panel) {
+    transform: scale(1);
+    filter: saturate(1);
+  }
+
+  @media (min-width: 700px) {
+    .services__rest {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .services__grid {
+      grid-template-columns: 1.4fr 1fr;
+      align-items: start;
+    }
+
+    .services__rest {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

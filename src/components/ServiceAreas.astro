@@ -1,0 +1,54 @@
+---
+// Implements docs §11.8 / §20 — reads exclusively from businessConfig.
+// Renders nothing false: an empty neighborhoods list shows a plain
+// "fale com a gente" prompt instead of an invented area list.
+import { businessConfig } from "../config/business";
+import { whatsappHref } from "../utils/whatsapp";
+import { serviceAreas } from "../content/copy";
+
+const { neighborhoods } = businessConfig;
+---
+
+<section id="atendimento" class="section section--surface service-areas">
+  <div class="container">
+    <div class="section-intro">
+      <h2>{serviceAreas.heading}</h2>
+    </div>
+
+    {neighborhoods.length > 0 ? (
+      <ul class="service-areas__tags">
+        {neighborhoods.map((n) => (
+          <li class="chip">
+            <span class="chip__swatch chip__swatch--accent"></span>
+            {n}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>{serviceAreas.emptyMessage}</p>
+    )}
+
+    <a class="service-areas__cta" href={whatsappHref("Vocês atendem a minha região?")}>
+      {serviceAreas.ctaLabel}
+    </a>
+  </div>
+</section>
+
+<style>
+  .service-areas__tags {
+    list-style: none;
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .service-areas__cta {
+    display: inline-block;
+    margin-top: var(--space-2);
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

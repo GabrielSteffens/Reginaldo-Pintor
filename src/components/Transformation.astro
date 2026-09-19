@@ -1,0 +1,345 @@
+---
+// Implements docs §15 — the before/after drag comparison component.
+// One Pointer Events implementation for desktop/tablet/mobile alike,
+// keyboard-accessible, with an honest placeholder state.
+import { beforeAfterPairs } from "../data/beforeAfter";
+import { whatsappHref } from "../utils/whatsapp";
+import { transformation } from "../content/copy";
+
+const pairs = [...beforeAfterPairs].sort((a, b) => a.order - b.order);
+---
+
+<section id="transformacao" class="section transformation">
+  <div class="container">
+    <div class="section-intro">
+      <h2>{transformation.heading}</h2>
+      <p>{transformation.intro}</p>
+    </div>
+
+    <div class="baf" data-baf-root>
+      {pairs.map((pair, i) => (
+        <div class="baf-pair" data-baf-pair data-index={i} hidden={i !== 0}>
+          <div class="baf-slider" data-baf-slider>
+            <div class="baf-layer baf-layer--after">
+              {pair.status === "real" && pair.afterImage ? (
+                <img src={pair.afterImage} alt={pair.afterAlt} loading="lazy" />
+              ) : (
+                // Also covers a "real" pair missing its image by mistake —
+                // falls back to the same honest placeholder rather than a
+                // broken <img>.
+                <div class="baf-placeholder baf-placeholder--after" role="img" aria-label={pair.afterAlt}></div>
+              )}
+            </div>
+            <div class="baf-layer baf-layer--before" data-baf-before>
+              {pair.status === "real" && pair.beforeImage ? (
+                <img src={pair.beforeImage} alt={pair.beforeAlt} loading="lazy" />
+              ) : (
+                <div class="baf-placeholder baf-placeholder--before" role="img" aria-label={pair.beforeAlt}></div>
+              )}
+            </div>
+
+            {pair.status === "placeholder" && (
+              <span class="baf-badge baf-badge--left">Exemplo ilustrativo</span>
+            )}
+
+            <div
+              class="baf-handle"
+              data-baf-handle
+              role="slider"
+              tabindex="0"
+              aria-label="Comparar antes e depois"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              aria-valuenow="0"
+            >
+              <span class="baf-handle__grip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M8 8 4 12l4 4" /><path d="M16 8l4 4-4 4" />
+                </svg>
+              </span>
+            </div>
+
+            <span class="baf-label baf-label--before">antes</span>
+            <span class="baf-label baf-label--after">depois</span>
+          </div>
+
+          {pair.status === "real" && (pair.location || pair.description) && (
+            <div class="baf-meta">
+              {pair.description && <p>{pair.description}</p>}
+              {pair.location && <p class="baf-meta__location">{pair.location}</p>}
+            </div>
+          )}
+
+          <a class="baf-cta" href={whatsappHref("Quero um resultado assim no meu projeto.")}>
+            {transformation.ctaLabel}
+          </a>
+        </div>
+      ))}
+
+      {pairs.length > 1 && (
+        <div class="baf-nav">
+          <button type="button" data-baf-prev aria-label="Exemplo anterior">‹</button>
+          <span data-baf-counter>1 / {pairs.length}</span>
+          <button type="button" data-baf-next aria-label="Próximo exemplo">›</button>
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>("[data-baf-root]");
+  if (root) {
+    const sliders = root.querySelectorAll<HTMLElement>("[data-baf-slider]");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    sliders.forEach((slider) => {
+      const before = slider.querySelector<HTMLElement>("[data-baf-before]");
+      const handle = slider.querySelector<HTMLElement>("[data-baf-handle]");
+      if (!before || !handle) return;
+
+      const REST_POS = 35;
+
+      const setPos = (pos: number, animate = false) => {
+        const clamped = Math.max(0, Math.min(100, pos));
+        if (animate) {
+          before.style.transition = `clip-path var(--motion-hero) var(--ease-reveal)`;
+          handle.style.transition = `left var(--motion-hero) var(--ease-reveal)`;
+        } else {
+          before.style.transition = "";
+          handle.style.transition = "";
+        }
+        before.style.clipPath = `inset(0 ${100 - clamped}% 0 0)`;
+        handle.style.left = `${clamped}%`;
+        handle.setAttribute("aria-valuenow", String(Math.round(clamped)));
+      };
+
+      setPos(0);
+
+      // One-time entrance sweep: teaches the drag interaction and reveals
+      // the section in the same motion (§15/§21).
+      const revealOnce = () => {
+        if (reduceMotion) {
+          setPos(REST_POS);
+          return;
+        }
+        requestAnimationFrame(() => setPos(REST_POS, true));
+      };
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              revealOnce();
+              observer.disconnect();
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      observer.observe(slider);
+
+      // Pointer-driven drag — identical code path for mouse, touch, and pen.
+      let dragging = false;
+
+      const posFromClientX = (clientX: number) => {
+        const rect = slider.getBoundingClientRect();
+        return ((clientX - rect.left) / rect.width) * 100;
+      };
+
+      const onPointerDown = (e: PointerEvent) => {
+        dragging = true;
+        handle.setPointerCapture(e.pointerId);
+        setPos(posFromClientX(e.clientX));
+      };
+
+      const onPointerMove = (e: PointerEvent) => {
+        if (!dragging) return;
+        setPos(posFromClientX(e.clientX));
+      };
+
+      const onPointerUp = (e: PointerEvent) => {
+        dragging = false;
+        handle.releasePointerCapture(e.pointerId);
+      };
+
+      handle.addEventListener("pointerdown", onPointerDown);
+      handle.addEventListener("pointermove", onPointerMove);
+      handle.addEventListener("pointerup", onPointerUp);
+      handle.addEventListener("pointercancel", onPointerUp);
+
+      // Keyboard accessibility.
+      handle.addEventListener("keydown", (e) => {
+        const current = Number(handle.getAttribute("aria-valuenow")) || 0;
+        if (e.key === "ArrowLeft") setPos(current - 5);
+        else if (e.key === "ArrowRight") setPos(current + 5);
+        else if (e.key === "Home") setPos(0);
+        else if (e.key === "End") setPos(100);
+        else return;
+        e.preventDefault();
+      });
+    });
+
+    // Multiple-pair navigation — controls live outside the image frame so
+    // they never compete with the drag gesture (§15).
+    const pairEls = Array.from(root.querySelectorAll<HTMLElement>("[data-baf-pair]"));
+    const prevBtn = root.querySelector<HTMLButtonElement>("[data-baf-prev]");
+    const nextBtn = root.querySelector<HTMLButtonElement>("[data-baf-next]");
+    const counter = root.querySelector<HTMLElement>("[data-baf-counter]");
+    let activeIndex = 0;
+
+    const show = (index: number) => {
+      activeIndex = (index + pairEls.length) % pairEls.length;
+      pairEls.forEach((el, i) => {
+        el.hidden = i !== activeIndex;
+      });
+      if (counter) counter.textContent = `${activeIndex + 1} / ${pairEls.length}`;
+    };
+
+    prevBtn?.addEventListener("click", () => show(activeIndex - 1));
+    nextBtn?.addEventListener("click", () => show(activeIndex + 1));
+  }
+</script>
+
+<style>
+  .baf-pair {
+    max-width: 42rem;
+    margin-inline: auto;
+  }
+
+  .baf-slider {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-frame);
+    overflow: hidden;
+    touch-action: pan-y;
+    background: var(--color-line);
+  }
+
+  .baf-layer {
+    position: absolute;
+    inset: 0;
+  }
+
+  .baf-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .baf-layer--before {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .baf-placeholder {
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.08) 1px, transparent 0);
+    background-size: 6px 6px;
+  }
+
+  .baf-placeholder--before {
+    background-color: var(--color-putty);
+  }
+
+  .baf-placeholder--after {
+    background-color: var(--color-accent);
+  }
+
+  .baf-badge {
+    position: absolute;
+    top: var(--space-1);
+    left: var(--space-1);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    font-size: 0.75rem;
+    padding: 0.3em 0.6em;
+    border-radius: var(--radius-sharp);
+    z-index: 3;
+  }
+
+  .baf-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0%;
+    width: 2px;
+    background: var(--color-surface);
+    cursor: ew-resize;
+    z-index: 2;
+  }
+
+  .baf-handle__grip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-pill);
+    background: var(--color-accent);
+    color: var(--color-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .baf-label {
+    position: absolute;
+    bottom: var(--space-1);
+    font-size: 0.75rem;
+    color: var(--color-surface);
+    background: rgba(42, 36, 32, 0.35);
+    padding: 0.25em 0.6em;
+    border-radius: var(--radius-sharp);
+  }
+
+  .baf-label--before {
+    left: var(--space-1);
+  }
+
+  .baf-label--after {
+    right: var(--space-1);
+  }
+
+  .baf-meta {
+    margin-top: var(--space-2);
+    font-size: var(--size-small);
+  }
+
+  .baf-meta__location {
+    color: var(--color-muted);
+  }
+
+  .baf-cta {
+    display: inline-block;
+    margin-top: var(--space-2);
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: var(--size-small);
+  }
+
+  .baf-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+  }
+
+  .baf-nav button {
+    background: none;
+    border: 1.5px solid var(--color-line);
+    border-radius: var(--radius-control);
+    width: 2.2em;
+    height: 2.2em;
+    cursor: pointer;
+    font-size: 1.1rem;
+  }
+
+  .baf-nav span {
+    font-size: var(--size-small);
+    color: var(--color-muted);
+  }
+</style>

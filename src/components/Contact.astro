@@ -1,0 +1,228 @@
+---
+// Implements docs §11.12 / §20. The form has no backend — this is a static
+// site — so submitting it composes a pre-filled WhatsApp message from the
+// fields and opens the chat directly, keeping "request a quote" a single
+// step with no server to wire up. Falls back to the #contato anchor per
+// §13 until a real WhatsApp number is configured.
+import { businessConfig } from "../config/business";
+import { enabledServices } from "../data/services";
+import { telHref, isWhatsappConfigured } from "../utils/whatsapp";
+import { contact } from "../content/copy";
+import Icon from "./Icon.astro";
+
+const { phone, email, businessHours, neighborhoods, address } = businessConfig;
+const services = enabledServices();
+const phoneLink = telHref();
+const whatsappReady = isWhatsappConfigured();
+---
+
+<section id="contato" class="section contact">
+  <div class="container contact__grid">
+    <div class="contact__info">
+      <h2>{contact.heading}</h2>
+      <p>{contact.intro}</p>
+
+      <ul class="contact__channels">
+        <li>
+          <a class="contact__channel" data-contact-whatsapp href="#contato">
+            <Icon name="whatsapp" size={22} />
+            <span>{whatsappReady ? contact.whatsappReadyLabel : contact.whatsappPendingLabel}</span>
+          </a>
+        </li>
+        {phoneLink && (
+          <li>
+            <a class="contact__channel" href={phoneLink}>
+              <Icon name="phone" size={20} />
+              <span>{phone}</span>
+            </a>
+          </li>
+        )}
+        {email && (
+          <li>
+            <a class="contact__channel" href={`mailto:${email}`}>
+              <span>{email}</span>
+            </a>
+          </li>
+        )}
+      </ul>
+
+      {businessHours && businessHours.length > 0 && (
+        <div class="contact__hours">
+          <h3>{contact.hoursHeading}</h3>
+          <ul>
+            {businessHours.map((h) => (
+              <li>{h.day}: {h.opens} – {h.closes}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {neighborhoods.length > 0 && (
+        <p class="contact__areas">Atendemos: {neighborhoods.join(", ")}</p>
+      )}
+
+      {address.showPublicly && (address.street || address.city) && (
+        <p class="contact__address">
+          {[address.street, address.number, address.neighborhood, address.city, address.state]
+            .filter(Boolean)
+            .join(", ")}
+        </p>
+      )}
+    </div>
+
+    <form class="contact__form" data-contact-form>
+      <div class="contact__field">
+        <label for="cf-nome">{contact.formLabels.nome}</label>
+        <input id="cf-nome" name="nome" type="text" required autocomplete="name" />
+      </div>
+
+      <div class="contact__field">
+        <label for="cf-telefone">{contact.formLabels.telefone}</label>
+        <input id="cf-telefone" name="telefone" type="tel" required autocomplete="tel" />
+      </div>
+
+      {neighborhoods.length > 0 && (
+        <div class="contact__field">
+          <label for="cf-bairro">{contact.formLabels.bairro}</label>
+          <select id="cf-bairro" name="bairro">
+            {neighborhoods.map((n) => <option value={n}>{n}</option>)}
+          </select>
+        </div>
+      )}
+
+      {services.length > 0 && (
+        <div class="contact__field">
+          <label for="cf-servico">{contact.formLabels.servico}</label>
+          <select id="cf-servico" name="servico">
+            {services.map((s) => <option value={s.title}>{s.title}</option>)}
+          </select>
+        </div>
+      )}
+
+      <div class="contact__field">
+        <label for="cf-mensagem">{contact.formLabels.mensagem}</label>
+        <textarea id="cf-mensagem" name="mensagem" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn--primary">{contact.formLabels.submit}</button>
+    </form>
+  </div>
+</section>
+
+<script>
+  import { whatsappHref } from "../utils/whatsapp";
+
+  const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+  const whatsappLinks = document.querySelectorAll<HTMLAnchorElement>("[data-contact-whatsapp]");
+
+  whatsappLinks.forEach((link) => {
+    link.setAttribute("href", whatsappHref("Olá! Gostaria de solicitar um orçamento."));
+  });
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const data = new FormData(form);
+    const nome = data.get("nome");
+    const telefone = data.get("telefone");
+    const bairro = data.get("bairro");
+    const servico = data.get("servico");
+    const mensagem = data.get("mensagem");
+
+    const lines = [
+      `Olá! Meu nome é ${nome}.`,
+      servico ? `Gostaria de um orçamento para: ${servico}.` : "Gostaria de um orçamento.",
+      bairro ? `Bairro: ${bairro}.` : null,
+      `Telefone para retorno: ${telefone}.`,
+      mensagem ? `Mensagem: ${mensagem}` : null,
+    ].filter(Boolean);
+
+    window.location.href = whatsappHref(lines.join(" "));
+  });
+</script>
+
+<style>
+  .contact__grid {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .contact__channels {
+    list-style: none;
+    margin: var(--space-3) 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .contact__channel {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    text-decoration: none;
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  .contact__hours ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.4em 0 0;
+    font-size: var(--size-small);
+  }
+
+  .contact__areas,
+  .contact__address {
+    font-size: var(--size-small);
+    color: var(--color-muted);
+  }
+
+  .contact__form {
+    display: grid;
+    gap: var(--space-2);
+    background: var(--color-surface);
+    padding: var(--space-3);
+    border-radius: var(--radius-control);
+  }
+
+  .contact__field {
+    display: grid;
+    gap: 0.35em;
+  }
+
+  .contact__field label {
+    font-size: var(--size-small);
+  }
+
+  .contact__field input,
+  .contact__field select,
+  .contact__field textarea {
+    font: inherit;
+    padding: 0.7em 0.85em;
+    /* --color-line reads as ~1.2:1 against the page background — fine as a
+       decorative divider elsewhere, but not enough for an interactive
+       field boundary (WCAG 1.4.11 needs 3:1). --color-muted clears it. */
+    border: 1.5px solid var(--color-muted);
+    border-radius: var(--radius-control);
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    transition: border-color var(--motion-instant) var(--ease-reveal);
+  }
+
+  .contact__field input:focus-visible,
+  .contact__field select:focus-visible,
+  .contact__field textarea:focus-visible {
+    border-color: var(--color-accent);
+    outline: none;
+  }
+
+  .contact__form button {
+    justify-self: start;
+  }
+
+  @media (min-width: 900px) {
+    .contact__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

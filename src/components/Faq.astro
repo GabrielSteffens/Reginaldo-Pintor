@@ -1,0 +1,87 @@
+---
+// Implements docs §11.10 / §19 — accessible accordion, native <details>
+// so it works with zero JavaScript and with assistive tech by default.
+import { getFaqs } from "../data/faq";
+import { whatsappHref } from "../utils/whatsapp";
+import { faq as faqCopy } from "../content/copy";
+
+const faqs = getFaqs();
+---
+
+<section id="faq" class="section section--surface faq">
+  <div class="container">
+    <div class="section-intro">
+      <h2>{faqCopy.heading}</h2>
+    </div>
+
+    <div class="faq__list">
+      {faqs.map((item) => (
+        <details class="faq-item">
+          <summary>
+            <span>{item.question}</span>
+            <span class="faq-item__indicator" aria-hidden="true"></span>
+          </summary>
+          <p>{item.answer}</p>
+        </details>
+      ))}
+    </div>
+
+    <p class="faq__closing">
+      {faqCopy.closingText}{" "}
+      <a href={whatsappHref("Tenho uma dúvida sobre o serviço de pintura.")}>{faqCopy.closingLinkLabel}</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .faq__list {
+    border-top: 1px solid var(--color-line);
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .faq-item summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding: var(--space-2) 0;
+    cursor: pointer;
+    list-style: none;
+    font-weight: 500;
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item__indicator {
+    flex-shrink: 0;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 1.5px solid var(--color-accent);
+    transition: background-color var(--motion-quick) var(--ease-reveal);
+  }
+
+  .faq-item[open] .faq-item__indicator {
+    background: var(--color-accent);
+  }
+
+  .faq-item p {
+    padding-bottom: var(--space-2);
+    max-width: 60ch;
+    color: var(--color-ink);
+  }
+
+  .faq__closing {
+    margin-top: var(--space-3);
+  }
+
+  .faq__closing a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+</style>

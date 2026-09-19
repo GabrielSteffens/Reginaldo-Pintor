@@ -1,0 +1,24 @@
+---
+/**
+ * The one shared CTA component (§10/§19). Every primary/secondary button
+ * on the site renders through this, so visual treatment never drifts
+ * between sections — consistency here is itself a trust signal.
+ */
+import { whatsappHref } from "../utils/whatsapp";
+
+interface Props {
+  variant?: "primary" | "secondary";
+  label: string;
+  /** WhatsApp pre-fill message. Ignored if `href` is provided instead. */
+  whatsappMessage?: string;
+  href?: string;
+  class?: string;
+}
+
+const { variant = "primary", label, whatsappMessage, href, class: className } = Astro.props;
+const finalHref = href ?? whatsappHref(whatsappMessage);
+---
+
+<a class:list={["btn", variant === "primary" ? "btn--primary" : "btn--secondary", className]} href={finalHref}>
+  {label}
+</a>

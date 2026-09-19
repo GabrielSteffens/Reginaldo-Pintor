@@ -1,0 +1,68 @@
+---
+/**
+ * The placeholder fallback for any image slot that doesn't have a real
+ * photo yet. Deliberately not a stock photo of painters or a job site —
+ * a flat brand-color field with a subtle grain texture, which reads as a
+ * decision rather than an empty box waiting for content (§10, §14).
+ */
+interface Props {
+  color?: "accent" | "accentOchre" | "putty";
+  icon?: "roller" | "brush" | "drop" | "wallCorner" | "tape";
+  label?: string;
+  ratio?: string; // aspect-ratio value, e.g. "4 / 5"
+  class?: string;
+}
+
+const { color = "accent", icon, label, ratio = "4 / 5", class: className } = Astro.props;
+---
+
+<div
+  class:list={["swatch-panel", `swatch-panel--${color}`, className]}
+  style={`aspect-ratio: ${ratio};`}
+  role={label ? "img" : undefined}
+  aria-label={label}
+>
+  {icon && (
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" class="swatch-panel__icon" aria-hidden="true">
+      <slot name="icon-path" />
+    </svg>
+  )}
+  <slot />
+</div>
+
+<style>
+  .swatch-panel {
+    position: relative;
+    width: 100%;
+    border-radius: var(--radius-frame);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.06) 1px, transparent 0);
+    background-size: 6px 6px;
+  }
+
+  /* Text/icon color is picked per background for WCAG contrast — surface
+     text only passes AA on the dark accent green (~8.2:1). On the lighter
+     ochre and putty tones it drops to ~2.4:1, so those use ink instead
+     (~6:1), which stays legible against both. */
+  .swatch-panel--accent {
+    background-color: var(--color-accent);
+    color: var(--color-surface);
+  }
+
+  .swatch-panel--accentOchre {
+    background-color: var(--color-accent-ochre);
+    color: var(--color-ink);
+  }
+
+  .swatch-panel--putty {
+    background-color: var(--color-putty);
+    color: var(--color-ink);
+  }
+
+  .swatch-panel__icon {
+    opacity: 0.85;
+  }
+</style>

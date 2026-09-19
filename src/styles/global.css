@@ -1,0 +1,247 @@
+@import "./tokens.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: var(--size-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.1;
+  margin: 0 0 var(--space-2);
+  color: var(--color-ink);
+}
+
+h1 {
+  font-size: var(--size-display);
+  line-height: 1.05;
+}
+
+h2 {
+  font-size: var(--size-h2);
+  line-height: 1.15;
+}
+
+h3 {
+  font-size: var(--size-h3);
+  line-height: 1.25;
+}
+
+p {
+  margin: 0 0 var(--space-2);
+  max-width: var(--content-max);
+}
+
+a {
+  color: inherit;
+}
+
+ul,
+ol {
+  padding-left: 1.25em;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+/* Layout helpers */
+
+.container {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: var(--space-2);
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-inline: var(--space-4);
+  }
+}
+
+.section {
+  padding-block: var(--space-section-mobile);
+}
+
+@media (min-width: 900px) {
+  .section {
+    padding-block: var(--space-section-desktop);
+  }
+}
+
+.section--surface {
+  background: var(--color-surface);
+}
+
+.section--accent {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.section--accent h2,
+.section--accent h3 {
+  color: var(--color-surface);
+}
+
+.section-intro {
+  max-width: var(--content-max);
+  margin-bottom: var(--space-4);
+}
+
+/* Accessibility helpers */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-2);
+  top: -100px;
+  background: var(--color-ink);
+  color: var(--color-surface);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-control);
+  z-index: 1000;
+  transition: top var(--motion-quick) var(--ease-reveal);
+}
+
+.skip-link:focus {
+  top: var(--space-2);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Buttons — the one shared CTA vocabulary (§10/§19) */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.85em 1.4em;
+  border-radius: var(--radius-control);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 1rem;
+  text-decoration: none;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--motion-instant) var(--ease-reveal),
+    border-color var(--motion-instant) var(--ease-reveal),
+    color var(--motion-instant) var(--ease-reveal);
+}
+
+.btn--primary {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.btn--primary:hover,
+.btn--primary:focus-visible {
+  background: var(--color-accent-hover);
+}
+
+.btn--secondary {
+  background: transparent;
+  border-color: var(--color-ink);
+  color: var(--color-ink);
+}
+
+.section--accent .btn--secondary {
+  border-color: var(--color-surface);
+  color: var(--color-surface);
+}
+
+.btn--secondary:hover,
+.btn--secondary:focus-visible {
+  background: rgba(42, 36, 32, 0.06);
+}
+
+.section--accent .btn--secondary:hover,
+.section--accent .btn--secondary:focus-visible {
+  background: rgba(251, 249, 245, 0.1);
+}
+
+/* Swatch chip — the recurring visual vocabulary (§10) */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--size-small);
+  color: var(--color-ink);
+}
+
+.chip__swatch {
+  width: 0.85em;
+  height: 0.85em;
+  border-radius: var(--radius-sharp);
+  flex-shrink: 0;
+}
+
+.chip__swatch--accent {
+  background: var(--color-accent);
+}
+
+.chip__swatch--ochre {
+  background: var(--color-accent-ochre);
+}
+
+.chip__swatch--putty {
+  background: var(--color-putty);
+}
+
+/* Reduced motion: every animated moment collapses to its resting state */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

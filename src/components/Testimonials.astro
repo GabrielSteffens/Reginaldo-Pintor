@@ -1,0 +1,97 @@
+---
+// Implements docs §11.9 / §18. Omitted entirely when both the testimonial
+// list is empty and showTestimonialInvitation is false — imported
+// conditionally by index.astro. Never a hollow quote carousel.
+import { testimonials, googleRating } from "../data/testimonials";
+import { businessConfig } from "../config/business";
+import { whatsappHref } from "../utils/whatsapp";
+import { testimonials as testimonialsCopy } from "../content/copy";
+
+const hasReviews = testimonials.length > 0;
+---
+
+<section id="depoimentos" class="section testimonials">
+  <div class="container">
+    <div class="section-intro">
+      <h2>{testimonialsCopy.heading}</h2>
+    </div>
+
+    {hasReviews ? (
+      <ul class="testimonials__grid">
+        {testimonials.map((t) => (
+          <li class="testimonial-card">
+            <span class="testimonial-card__mark" aria-hidden="true">“</span>
+            <p>{t.quote}</p>
+            <p class="testimonial-card__author">
+              {t.authorFirstName}{t.neighborhood ? ` — ${t.neighborhood}` : ""}
+            </p>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <div class="testimonials__invitation">
+        <p>{testimonialsCopy.invitationMessage}</p>
+        <a href={whatsappHref("Gostaria de deixar uma avaliação do trabalho.")}>
+          {testimonialsCopy.invitationCtaLabel}
+        </a>
+      </div>
+    )}
+
+    {googleRating && businessConfig.googleBusinessProfileUrl && (
+      <a class="testimonials__google" href={businessConfig.googleBusinessProfileUrl}>
+        {googleRating.value.toFixed(1)} no Google, com base em {googleRating.count} avaliações — ver todas
+      </a>
+    )}
+  </div>
+</section>
+
+<style>
+  .testimonials__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .testimonial-card {
+    background: var(--color-surface);
+    padding: var(--space-3);
+    border-radius: var(--radius-control);
+  }
+
+  .testimonial-card__mark {
+    color: var(--color-accent);
+    font-family: var(--font-display);
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  .testimonial-card__author {
+    margin-top: var(--space-1);
+    font-size: var(--size-small);
+    color: var(--color-muted);
+  }
+
+  .testimonials__invitation p {
+    max-width: 40ch;
+  }
+
+  .testimonials__invitation a {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .testimonials__google {
+    display: inline-block;
+    margin-top: var(--space-3);
+    color: var(--color-accent);
+  }
+
+  @media (min-width: 700px) {
+    .testimonials__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
