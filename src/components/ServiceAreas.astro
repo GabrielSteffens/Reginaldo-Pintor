@@ -1,56 +1,21 @@
 ---
 // Implements docs §11.8 / §20 — reads exclusively from businessConfig.
-// Displays the 4 confirmed cities in Greater Florianópolis with an interactive Google Maps region viewer.
+// Displays confirmed service cities and embeds the custom Google My Maps region.
 import { businessConfig } from "../config/business";
 import { whatsappHref } from "../utils/whatsapp";
 import { serviceAreas } from "../content/copy";
 
-const { neighborhoods } = businessConfig;
+const { neighborhoods, googleMapsEmbedUrl, googleMapsViewUrl } = businessConfig;
 
-interface CityRegion {
-  id: string;
-  name: string;
-  query: string;
-  zoom: number;
-}
-
-const regions: CityRegion[] = [
-  {
-    id: "sao-jose",
-    name: "São José",
-    query: "São José - SC",
-    zoom: 13,
-  },
-  {
-    id: "florianopolis",
-    name: "Florianópolis",
-    query: "Florianópolis - SC",
-    zoom: 12,
-  },
-  {
-    id: "palhoca",
-    name: "Palhoça",
-    query: "Palhoça - SC",
-    zoom: 13,
-  },
-  {
-    id: "biguacu",
-    name: "Biguaçu",
-    query: "Biguaçu - SC",
-    zoom: 13,
-  },
-  {
-    id: "todas",
-    name: "Todas as Regiões",
-    query: "Grande Florianópolis, São José - SC",
-    zoom: 11,
-  },
-];
-
-const defaultRegion = regions[0];
-const initialMapSrc = `https://maps.google.com/maps?q=${encodeURIComponent(defaultRegion.query)}&t=&z=${defaultRegion.zoom}&ie=UTF8&iwloc=&output=embed`;
-const initialMapDirectUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(defaultRegion.query)}`;
-const whatsappConsultUrl = whatsappHref("Olá, Reginaldo! Gostaria de confirmar atendimento para pintura residencial na minha região.");
+const mapEmbedSrc =
+  googleMapsEmbedUrl ??
+  "https://www.google.com/maps/d/embed?mid=1ml9efDRtBo4SUpt3yO_uiM26FPqJPcM";
+const mapViewHref =
+  googleMapsViewUrl ??
+  "https://www.google.com/maps/d/viewer?mid=1ml9efDRtBo4SUpt3yO_uiM26FPqJPcM&usp=sharing";
+const whatsappConsultUrl = whatsappHref(
+  "Olá, Reginaldo! Gostaria de confirmar atendimento para pintura residencial na minha região."
+);
 ---
 
 <section id="atendimento" class="section section--surface service-areas">
@@ -67,37 +32,28 @@ const whatsappConsultUrl = whatsappHref("Olá, Reginaldo! Gostaria de confirmar 
 
     {neighborhoods.length > 0 ? (
       <div class="service-areas__content">
-        <!-- Interactive City Switcher Tabs -->
-        <div class="service-areas__tabs" role="tablist" aria-label="Selecione a cidade para ver no mapa">
-          {regions.map((reg, index) => (
-            <button
-              type="button"
-              class={`city-tab ${index === 0 ? "is-active" : ""}`}
-              data-map-city={reg.id}
-              data-query={reg.query}
-              data-zoom={reg.zoom}
-              role="tab"
-              aria-selected={index === 0 ? "true" : "false"}
-              aria-controls="service-map-panel"
-            >
-              <svg class="city-tab__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <!-- Confirmed Service Cities Badges -->
+        <div class="service-areas__tags" aria-label="Cidades atendidas">
+          {neighborhoods.map((city) => (
+            <span class="city-badge">
+              <svg class="city-badge__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
-              <span class="city-tab__name">{reg.name}</span>
-            </button>
+              <span>{city}</span>
+            </span>
           ))}
         </div>
 
-        <!-- Google Maps Display Card -->
-        <div id="service-map-panel" class="service-map-card" role="tabpanel" aria-label="Mapa de cobertura regional">
+        <!-- Google My Maps Display Card -->
+        <div id="service-map-panel" class="service-map-card" role="region" aria-label="Mapa de cobertura regional">
           <div class="service-map-card__frame">
             <iframe
               id="service-map-frame"
-              src={initialMapSrc}
+              src={mapEmbedSrc}
               title="Mapa de cobertura em São José, Florianópolis, Palhoça e Biguaçu - SC"
               width="100%"
-              height="450"
+              height="480"
               style="border:0;"
               allowfullscreen
               loading="lazy"
@@ -142,11 +98,11 @@ const whatsappConsultUrl = whatsappHref("Olá, Reginaldo! Gostaria de confirmar 
             </a>
             <a
               id="service-map-link"
-              href={initialMapDirectUrl}
+              href={mapViewHref}
               target="_blank"
               rel="noopener noreferrer"
               class="btn btn--secondary"
-              title="Abrir localização no Google Maps"
+              title="Abrir mapa ampliado no Google Maps"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
@@ -163,44 +119,6 @@ const whatsappConsultUrl = whatsappHref("Olá, Reginaldo! Gostaria de confirmar 
     )}
   </div>
 </section>
-
-<script>
-  function setupServiceMap() {
-    const buttons = document.querySelectorAll<HTMLButtonElement>("[data-map-city]");
-    const iframe = document.querySelector<HTMLIFrameElement>("#service-map-frame");
-    const linkEl = document.querySelector<HTMLAnchorElement>("#service-map-link");
-
-    if (!buttons.length || !iframe) return;
-
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const query = btn.dataset.query;
-        const zoom = btn.dataset.zoom || "13";
-
-        buttons.forEach((b) => {
-          b.classList.remove("is-active");
-          b.setAttribute("aria-selected", "false");
-        });
-        btn.classList.add("is-active");
-        btn.setAttribute("aria-selected", "true");
-
-        if (query) {
-          iframe.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=${zoom}&ie=UTF8&iwloc=&output=embed`;
-          if (linkEl) {
-            linkEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
-          }
-        }
-      });
-    });
-  }
-
-  // Setup on page load
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", setupServiceMap);
-  } else {
-    setupServiceMap();
-  }
-</script>
 
 <style>
   .service-areas {
@@ -239,8 +157,8 @@ const whatsappConsultUrl = whatsappHref("Olá, Reginaldo! Gostaria de confirmar 
     gap: var(--space-3);
   }
 
-  /* Interactive City Switcher Tabs */
-  .service-areas__tabs {
+  /* Confirmed Service Cities Badges */
+  .service-areas__tags {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-1);
@@ -248,43 +166,25 @@ const whatsappConsultUrl = whatsappHref("Olá, Reginaldo! Gostaria de confirmar 
     margin-bottom: var(--space-1);
   }
 
-  .city-tab {
+  .city-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.45rem;
-    padding: 0.55rem 1.1rem;
+    padding: 0.5rem 1.1rem;
     font-size: var(--size-small);
     font-family: var(--font-body);
-    font-weight: 500;
+    font-weight: 600;
     color: var(--color-ink);
     background: #ffffff;
     border: 1px solid var(--color-line);
     border-radius: var(--radius-pill);
-    cursor: pointer;
-    transition: all var(--motion-instant) ease;
-  }
-
-  .city-tab:hover {
-    border-color: var(--color-accent);
-    background-color: rgba(62, 79, 60, 0.05);
-    color: var(--color-accent);
-  }
-
-  .city-tab.is-active {
-    background-color: var(--color-accent);
-    border-color: var(--color-accent);
-    color: #ffffff;
     box-shadow: var(--shadow-warm-soft);
+    letter-spacing: -0.01em;
   }
 
-  .city-tab__icon {
+  .city-badge__icon {
+    color: var(--color-accent);
     flex-shrink: 0;
-    opacity: 0.8;
-  }
-
-  .city-tab.is-active .city-tab__icon {
-    opacity: 1;
-    stroke: #ffffff;
   }
 
   /* Map Card Container */
@@ -306,7 +206,7 @@ const whatsappConsultUrl = whatsappHref("Olá, Reginaldo! Gostaria de confirmar 
 
   .service-map-card__frame iframe {
     width: 100%;
-    height: 450px;
+    height: 480px;
     display: block;
   }
 
@@ -422,7 +322,7 @@ const whatsappConsultUrl = whatsappHref("Olá, Reginaldo! Gostaria de confirmar 
 
   @media (max-width: 640px) {
     .service-map-card__frame iframe {
-      height: 340px;
+      height: 360px;
     }
 
     .service-areas__cta-actions {

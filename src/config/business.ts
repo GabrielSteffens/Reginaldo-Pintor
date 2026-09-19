@@ -76,6 +76,10 @@ export interface BusinessConfig {
     src: string | null;
     alt: string;
   };
+  /** Custom Google Maps embed URL (e.g. My Maps) */
+  googleMapsEmbedUrl?: string | null;
+  /** Direct link to view the map externally */
+  googleMapsViewUrl?: string | null;
   /** Set true only once the business has confirmed they offer a touch-up guarantee. */
   guarantee: {
     offered: boolean;
@@ -106,6 +110,9 @@ export const businessConfig: BusinessConfig = {
     "Palhoça",
     "Biguaçu",
   ],
+
+  googleMapsEmbedUrl: "https://www.google.com/maps/d/embed?mid=1ml9efDRtBo4SUpt3yO_uiM26FPqJPcM",
+  googleMapsViewUrl: "https://www.google.com/maps/d/viewer?mid=1ml9efDRtBo4SUpt3yO_uiM26FPqJPcM&usp=sharing",
 
   // CONFIGURE — e.g. [{ day: "Seg", opens: "08:00", closes: "18:00" }, ...]
   businessHours: null,
