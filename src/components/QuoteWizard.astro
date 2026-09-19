@@ -1,0 +1,1119 @@
+---
+// src/components/QuoteWizard.astro
+import Icon from "./Icon.astro";
+import { quoteWizard } from "../content/copy";
+import {
+  propertyOptions,
+  serviceOptions,
+  sizeSimpleOptions,
+  conditionOptions,
+  preparationOptions,
+  colorsOptions,
+} from "../data/quote";
+import { businessConfig } from "../config/business";
+
+const neighborhoods = businessConfig.neighborhoods;
+---
+
+<div class="quote-wizard" data-quote-wizard>
+  <!-- Header / Stepper Progress -->
+  <div class="qw-header">
+    <div class="qw-progress" role="progressbar" aria-valuemin="1" aria-valuemax="8" aria-valuenow="1" data-qw-progress>
+      <div class="qw-progress__meta">
+        <span class="qw-progress__label" data-qw-progress-label>Passo 1 de 7</span>
+        <span class="qw-progress__percent" data-qw-progress-percent>14%</span>
+      </div>
+      <div class="qw-progress__track">
+        <div class="qw-progress__fill" data-qw-progress-fill style="width: 14%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="visually-hidden" role="status" aria-live="polite" data-qw-announce></p>
+
+  <!-- Step Panels Container -->
+  <div class="qw-panels" data-qw-panels>
+
+    <!-- STEP 1: Tipo de Imóvel -->
+    <section class="qw-panel qw-panel--active" data-qw-step="0" aria-label="Tipo de imóvel">
+      <h3 class="qw-panel__question">Qual tipo de imóvel você quer pintar?</h3>
+      <p class="qw-panel__hint">Selecione a opção que melhor descreve o local da pintura.</p>
+      
+      <div class="qw-grid qw-grid--2col" role="group" aria-label="Tipo de imóvel">
+        {propertyOptions.map((opt) => (
+          <button type="button" class="qw-card" data-qw-opt="property" data-value={opt.value} aria-pressed="false">
+            {opt.icon && <Icon name={opt.icon} size={28} class="qw-card__icon" />}
+            <span class="qw-card__label">{opt.label}</span>
+            <span class="qw-card__check" aria-hidden="true"></span>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- STEP 2: Serviços -->
+    <section class="qw-panel" data-qw-step="1" hidden aria-label="O que precisa pintar">
+      <h3 class="qw-panel__question">O que você precisa pintar?</h3>
+      <p class="qw-panel__hint">Selecione uma ou mais áreas que farão parte do serviço.</p>
+
+      <div class="qw-grid qw-grid--3col" role="group" aria-label="Serviços necessários">
+        {serviceOptions.map((opt) => (
+          <button type="button" class="qw-card qw-card--multi" data-qw-opt="service" data-value={opt.value} aria-pressed="false">
+            {opt.icon && <Icon name={opt.icon} size={24} class="qw-card__icon" />}
+            <span class="qw-card__label">{opt.label}</span>
+            <span class="qw-card__checkbox" aria-hidden="true"></span>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- STEP 3: Tamanho Aproximado (Simples / Avançado) -->
+    <section class="qw-panel" data-qw-step="2" hidden aria-label="Tamanho aproximado">
+      <h3 class="qw-panel__question">Qual é o tamanho aproximado da área?</h3>
+      <p class="qw-panel__hint">Escolha uma faixa estimada ou digite a metragem exata se souber.</p>
+
+      <!-- Mode Switcher Tabs -->
+      <div class="qw-tabs" role="tablist" aria-label="Modo de metragem">
+        <button type="button" class="qw-tab qw-tab--active" role="tab" aria-selected="true" data-qw-size-tab="simple">
+          Estimativa rápida
+        </button>
+        <button type="button" class="qw-tab" role="tab" aria-selected="false" data-qw-size-tab="advanced">
+          Digitar área em m²
+        </button>
+      </div>
+
+      <!-- Simple Size Mode -->
+      <div class="qw-size-mode" data-qw-size-pane="simple">
+        <div class="qw-grid qw-grid--chips" role="group" aria-label="Faixas de tamanho">
+          {sizeSimpleOptions.map((opt) => (
+            <button type="button" class="qw-card qw-card--chip" data-qw-opt="size-simple" data-value={opt.value} aria-pressed="false">
+              <span class="qw-card__label">{opt.label}</span>
+              <span class="qw-card__check" aria-hidden="true"></span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Advanced Size Mode -->
+      <div class="qw-size-mode" data-qw-size-pane="advanced" hidden>
+        <div class="qw-input-box">
+          <label for="qw-m2-input" class="qw-input-box__label">Área estimada total:</label>
+          <div class="qw-input-addon">
+            <input
+              type="number"
+              id="qw-m2-input"
+              data-qw-m2-input
+              min="10"
+              max="5000"
+              step="1"
+              placeholder="Ex: 120"
+              class="qw-input"
+            />
+            <span class="qw-input-addon__suffix">m²</span>
+          </div>
+          <span class="qw-input-box__help">Se não souber a metragem exata, alterne para a aba "Estimativa rápida".</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: Estado das Superfícies -->
+    <section class="qw-panel" data-qw-step="3" hidden aria-label="Condição das superfícies">
+      <h3 class="qw-panel__question">Como estão as superfícies?</h3>
+      <p class="qw-panel__hint">Isso ajuda a prever o nível de tratamento e lixamento necessário.</p>
+
+      <div class="qw-grid qw-grid--list" role="group" aria-label="Estado atual">
+        {conditionOptions.map((opt) => (
+          <button type="button" class="qw-card qw-card--horizontal" data-qw-opt="condition" data-value={opt.value} aria-pressed="false">
+            <span class="qw-card__label">{opt.label}</span>
+            <span class="qw-card__check" aria-hidden="true"></span>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- STEP 5: Preparação Necessária -->
+    <section class="qw-panel" data-qw-step="4" hidden aria-label="Preparação necessária">
+      <h3 class="qw-panel__question">A superfície precisará de preparação ou reparos?</h3>
+      <p class="qw-panel__hint">A durabilidade da pintura depende de uma boa base.</p>
+
+      <div class="qw-grid qw-grid--list" role="group" aria-label="Nível de preparação">
+        {preparationOptions.map((opt) => (
+          <button type="button" class="qw-card qw-card--horizontal" data-qw-opt="preparation" data-value={opt.value} aria-pressed="false">
+            <span class="qw-card__label">{opt.label}</span>
+            <span class="qw-card__check" aria-hidden="true"></span>
+          </button>
+        ))}
+      </div>
+    </section>
+
+    <!-- STEP 6: Escolha de Cores -->
+    <section class="qw-panel" data-qw-step="5" hidden aria-label="Escolha de cores">
+      <h3 class="qw-panel__question">Você já escolheu as cores?</h3>
+      <p class="qw-panel__hint">Se ainda não decidiu, o Reginaldo pode ajudar na escolha.</p>
+
+      <div class="qw-grid qw-grid--list" role="group" aria-label="Escolha de cores">
+        {colorsOptions.map((opt) => (
+          <button type="button" class="qw-card qw-card--horizontal" data-qw-opt="colors" data-value={opt.value} aria-pressed="false">
+            <span class="qw-card__label">{opt.label}</span>
+            <span class="qw-card__check" aria-hidden="true"></span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Color Advice Banner (shows when "Quero sugestões de combinação" is selected) -->
+      <div class="qw-callout" data-qw-color-callout hidden>
+        <div class="qw-callout__icon">
+          <Icon name="brush" size={24} />
+        </div>
+        <div class="qw-callout__content">
+          <h4>{quoteWizard.colorAdviceTip}</h4>
+          <p>Durante a avaliação no local, avaliamos a iluminação natural dos cômodos e apresentamos amostras reais de acabamentos fosco e acetinado.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 7: Dados do Cliente -->
+    <section class="qw-panel" data-qw-step="6" hidden aria-label="Seus dados para contato">
+      <h3 class="qw-panel__question">Onde enviamos seu orçamento?</h3>
+      <p class="qw-panel__hint">Informações diretas para retorno rápido com Reginaldo.</p>
+
+      <div class="qw-form">
+        <div class="qw-form__row">
+          <div class="qw-form__field">
+            <label for="qw-name" class="qw-label">Seu nome *</label>
+            <input type="text" id="qw-name" data-qw-name class="qw-input" placeholder="Ex: Maria Silva" required autocomplete="name" />
+          </div>
+
+          <div class="qw-form__field">
+            <label for="qw-whatsapp" class="qw-label">WhatsApp *</label>
+            <input type="tel" id="qw-whatsapp" data-qw-whatsapp class="qw-input" placeholder="(11) 99999-9999" required autocomplete="tel" />
+          </div>
+        </div>
+
+        <div class="qw-form__field">
+          <label for="qw-location" class="qw-label">Bairro / Cidade do imóvel *</label>
+          {neighborhoods && neighborhoods.length > 0 ? (
+            <select id="qw-location" data-qw-location class="qw-input">
+              <option value="">Selecione seu bairro...</option>
+              {neighborhoods.map((n) => <option value={n}>{n}</option>)}
+              <option value="__other__">Outro bairro ou cidade...</option>
+            </select>
+          ) : (
+            <input type="text" id="qw-location" data-qw-location class="qw-input" placeholder="Ex: Centro / Zona Sul" required />
+          )}
+          <input
+            type="text"
+            id="qw-location-custom"
+            data-qw-location-custom
+            class="qw-input qw-input--margin-top"
+            placeholder="Digite seu bairro ou cidade"
+            hidden
+          />
+        </div>
+
+        <div class="qw-form__field">
+          <label for="qw-message" class="qw-label">Mensagem ou detalhe extra (opcional)</label>
+          <textarea
+            id="qw-message"
+            data-qw-message
+            class="qw-input qw-textarea"
+            rows="3"
+            placeholder="Ex: Gostaria de iniciar no próximo mês; o teto é alto..."
+          ></textarea>
+        </div>
+
+        <div class="qw-photo-tip">
+          <Icon name="clipboard" size={20} class="qw-photo-tip__icon" />
+          <span>{quoteWizard.photoTip}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 8: Resumo do Projeto (Review & Submit) -->
+    <section class="qw-panel" data-qw-step="7" hidden aria-label="Resumo do projeto">
+      <h3 class="qw-panel__question">{quoteWizard.summaryHeading}</h3>
+      <p class="qw-panel__hint">Confira os dados antes de solicitar. Você pode ajustar qualquer ponto.</p>
+
+      <div class="qw-summary" data-qw-summary-list>
+        <!-- Injected via JavaScript from answers -->
+      </div>
+
+      <div class="qw-disclaimer">
+        <p>{quoteWizard.disclaimer}</p>
+      </div>
+
+      <div class="qw-submit-wrap">
+        <button type="button" class="btn btn--primary qw-submit-btn" data-qw-submit>
+          <Icon name="whatsapp" size={22} />
+          <span>{quoteWizard.submitLabel}</span>
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Wizard Footer Controls -->
+  <footer class="qw-footer">
+    <button type="button" class="btn btn--secondary qw-btn-back" data-qw-back hidden>
+      {quoteWizard.backLabel}
+    </button>
+    <div class="qw-footer__spacer"></div>
+    <button type="button" class="btn btn--primary qw-btn-next" data-qw-next disabled>
+      {quoteWizard.nextLabel}
+    </button>
+  </footer>
+</div>
+
+<script>
+  import {
+    buildQuoteWhatsappMessage,
+    buildQuoteSummaryItems,
+  } from "../utils/quoteSummary";
+  import { whatsappHref } from "../utils/whatsapp";
+  import type { QuoteAnswers, PropertyType, ServiceType, SizeOption, SurfaceCondition, PreparationOption, ColorsOption } from "../types/quote";
+
+  const TOTAL_STEPS = 8; // 0..6 (questions) + 7 (summary)
+  let currentStep = 0;
+
+  const state: QuoteAnswers = {
+    propertyType: null,
+    services: [],
+    sizeMode: "simple",
+    sizeSimple: null,
+    sizeAdvancedM2: null,
+    condition: null,
+    preparation: null,
+    colors: null,
+    customerName: "",
+    customerWhatsapp: "",
+    customerLocation: "",
+    customerMessage: "",
+  };
+
+  // DOM elements
+  const wizard = document.querySelector<HTMLElement>("[data-quote-wizard]");
+  if (wizard) {
+    const panels = Array.from(wizard.querySelectorAll<HTMLElement>("[data-qw-step]"));
+    const progressFill = wizard.querySelector<HTMLElement>("[data-qw-progress-fill]");
+    const progressLabel = wizard.querySelector<HTMLElement>("[data-qw-progress-label]");
+    const progressPercent = wizard.querySelector<HTMLElement>("[data-qw-progress-percent]");
+    const progressBar = wizard.querySelector<HTMLElement>("[data-qw-progress]");
+    const announce = wizard.querySelector<HTMLElement>("[data-qw-announce]");
+    const backBtn = wizard.querySelector<HTMLButtonElement>("[data-qw-back]");
+    const nextBtn = wizard.querySelector<HTMLButtonElement>("[data-qw-next]");
+    const summaryList = wizard.querySelector<HTMLElement>("[data-qw-summary-list]");
+    const submitBtn = wizard.querySelector<HTMLButtonElement>("[data-qw-submit]");
+    const colorCallout = wizard.querySelector<HTMLElement>("[data-qw-color-callout]");
+
+    // Inputs in Step 7
+    const inputName = wizard.querySelector<HTMLInputElement>("[data-qw-name]");
+    const inputWhatsapp = wizard.querySelector<HTMLInputElement>("[data-qw-whatsapp]");
+    const selectLocation = wizard.querySelector<HTMLSelectElement | HTMLInputElement>("[data-qw-location]");
+    const customLocation = wizard.querySelector<HTMLInputElement>("[data-qw-location-custom]");
+    const inputMessage = wizard.querySelector<HTMLTextAreaElement>("[data-qw-message]");
+
+    // Step 3 Size tabs & input
+    const sizeTabs = Array.from(wizard.querySelectorAll<HTMLButtonElement>("[data-qw-size-tab]"));
+    const sizePanes = Array.from(wizard.querySelectorAll<HTMLElement>("[data-qw-size-pane]"));
+    const m2Input = wizard.querySelector<HTMLInputElement>("[data-qw-m2-input]");
+
+    // Format WhatsApp phone input as (99) 99999-9999
+    if (inputWhatsapp) {
+      inputWhatsapp.addEventListener("input", () => {
+        let v = inputWhatsapp.value.replace(/\D/g, "");
+        if (v.length > 11) v = v.slice(0, 11);
+        if (v.length > 6) {
+          inputWhatsapp.value = `(${v.slice(0, 2)}) ${v.slice(2, 7)}-${v.slice(7)}`;
+        } else if (v.length > 2) {
+          inputWhatsapp.value = `(${v.slice(0, 2)}) ${v.slice(2)}`;
+        } else if (v.length > 0) {
+          inputWhatsapp.value = `(${v}`;
+        } else {
+          inputWhatsapp.value = "";
+        }
+        state.customerWhatsapp = inputWhatsapp.value;
+        validateStep();
+      });
+    }
+
+    if (inputName) {
+      inputName.addEventListener("input", () => {
+        state.customerName = inputName.value.trim();
+        validateStep();
+      });
+    }
+
+    if (selectLocation) {
+      selectLocation.addEventListener("change", () => {
+        if (selectLocation.value === "__other__") {
+          if (customLocation) {
+            customLocation.hidden = false;
+            customLocation.focus();
+            state.customerLocation = customLocation.value.trim();
+          }
+        } else {
+          if (customLocation) customLocation.hidden = true;
+          state.customerLocation = selectLocation.value.trim();
+        }
+        validateStep();
+      });
+    }
+
+    if (customLocation) {
+      customLocation.addEventListener("input", () => {
+        state.customerLocation = customLocation.value.trim();
+        validateStep();
+      });
+    }
+
+    if (inputMessage) {
+      inputMessage.addEventListener("input", () => {
+        state.customerMessage = inputMessage.value.trim();
+      });
+    }
+
+    // Tab switcher for Step 3 (Size)
+    sizeTabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const mode = tab.getAttribute("data-qw-size-tab") as "simple" | "advanced";
+        state.sizeMode = mode;
+        sizeTabs.forEach((t) => {
+          const isActive = t === tab;
+          t.classList.toggle("qw-tab--active", isActive);
+          t.setAttribute("aria-selected", String(isActive));
+        });
+        sizePanes.forEach((pane) => {
+          pane.hidden = pane.getAttribute("data-qw-size-pane") !== mode;
+        });
+        validateStep();
+      });
+    });
+
+    if (m2Input) {
+      m2Input.addEventListener("input", () => {
+        const val = parseInt(m2Input.value, 10);
+        state.sizeAdvancedM2 = isNaN(val) ? null : val;
+        validateStep();
+      });
+    }
+
+    // Click handler for card options in steps 0, 1, 2, 3, 4, 5
+    wizard.addEventListener("click", (e) => {
+      const target = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-qw-opt]");
+      if (!target) return;
+
+      const optGroup = target.getAttribute("data-qw-opt");
+      const val = target.getAttribute("data-value") || "";
+
+      if (optGroup === "property") {
+        state.propertyType = val as PropertyType;
+        updateCardSelection(target, false);
+        validateStep();
+        autoAdvance();
+      } else if (optGroup === "service") {
+        const itemVal = val as ServiceType;
+        const exists = state.services.includes(itemVal);
+        if (exists) {
+          state.services = state.services.filter((s) => s !== itemVal);
+          target.classList.remove("qw-card--selected");
+          target.setAttribute("aria-pressed", "false");
+        } else {
+          state.services.push(itemVal);
+          target.classList.add("qw-card--selected");
+          target.setAttribute("aria-pressed", "true");
+        }
+        validateStep();
+      } else if (optGroup === "size-simple") {
+        state.sizeSimple = val as SizeOption;
+        updateCardSelection(target, false);
+        validateStep();
+        autoAdvance();
+      } else if (optGroup === "condition") {
+        state.condition = val as SurfaceCondition;
+        updateCardSelection(target, false);
+        validateStep();
+        autoAdvance();
+      } else if (optGroup === "preparation") {
+        state.preparation = val as PreparationOption;
+        updateCardSelection(target, false);
+        validateStep();
+        autoAdvance();
+      } else if (optGroup === "colors") {
+        state.colors = val as ColorsOption;
+        updateCardSelection(target, false);
+        if (colorCallout) {
+          colorCallout.hidden = val !== "Quero sugestões de combinação";
+        }
+        validateStep();
+        if (val !== "Quero sugestões de combinação") {
+          autoAdvance();
+        }
+      }
+    });
+
+    function updateCardSelection(selectedBtn: HTMLButtonElement, isMulti: boolean) {
+      const parent = selectedBtn.closest("[role='group']") || selectedBtn.parentElement;
+      if (!parent) return;
+
+      if (!isMulti) {
+        parent.querySelectorAll<HTMLButtonElement>("[data-qw-opt]").forEach((b) => {
+          b.classList.remove("qw-card--selected");
+          b.setAttribute("aria-pressed", "false");
+        });
+      }
+      selectedBtn.classList.add("qw-card--selected");
+      selectedBtn.setAttribute("aria-pressed", "true");
+    }
+
+    function isStepValid(step: number): boolean {
+      switch (step) {
+        case 0:
+          return Boolean(state.propertyType);
+        case 1:
+          return state.services.length > 0;
+        case 2:
+          if (state.sizeMode === "simple") {
+            return Boolean(state.sizeSimple);
+          } else {
+            return Boolean(state.sizeAdvancedM2 && state.sizeAdvancedM2 > 0);
+          }
+        case 3:
+          return Boolean(state.condition);
+        case 4:
+          return Boolean(state.preparation);
+        case 5:
+          return Boolean(state.colors);
+        case 6:
+          return Boolean(
+            state.customerName.trim().length >= 2 &&
+            state.customerWhatsapp.trim().length >= 10 &&
+            state.customerLocation.trim().length >= 2
+          );
+        case 7:
+          return true; // summary step
+        default:
+          return false;
+      }
+    }
+
+    function validateStep() {
+      const valid = isStepValid(currentStep);
+      if (nextBtn) {
+        nextBtn.disabled = !valid;
+      }
+    }
+
+    function autoAdvance() {
+      // Small pause so the user sees the button active highlight
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduceMotion) {
+        goToStep(currentStep + 1);
+      } else {
+        setTimeout(() => {
+          if (currentStep < 6) {
+            goToStep(currentStep + 1);
+          }
+        }, 180);
+      }
+    }
+
+    function renderSummary() {
+      if (!summaryList) return;
+      const items = buildQuoteSummaryItems(state);
+      summaryList.innerHTML = items
+        .map(
+          (item) => `
+        <div class="qw-summary__row">
+          <div class="qw-summary__info">
+            <span class="qw-summary__label">${item.label}</span>
+            <strong class="qw-summary__val">${item.value}</strong>
+          </div>
+          <button type="button" class="qw-summary__edit" data-qw-jump="${item.stepIndex}">
+            Editar
+          </button>
+        </div>
+      `
+        )
+        .join("");
+
+      // Bind jump edit buttons
+      summaryList.querySelectorAll<HTMLButtonElement>("[data-qw-jump]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const jumpIndex = parseInt(btn.getAttribute("data-qw-jump") || "0", 10);
+          goToStep(jumpIndex);
+        });
+      });
+    }
+
+    function goToStep(index: number) {
+      if (index < 0 || index >= TOTAL_STEPS) return;
+
+      panels.forEach((p, i) => {
+        const isTarget = i === index;
+        p.hidden = !isTarget;
+        p.classList.toggle("qw-panel--active", isTarget);
+      });
+
+      currentStep = index;
+
+      // Update progress bar
+      const isSummary = currentStep === 7;
+      const displayStep = Math.min(currentStep + 1, 7);
+      const percent = isSummary ? 100 : Math.round(((currentStep + 1) / 7) * 100);
+
+      if (progressFill) progressFill.style.width = `${percent}%`;
+      if (progressPercent) progressPercent.textContent = `${percent}%`;
+      if (progressLabel) {
+        progressLabel.textContent = isSummary ? "Resumo do seu projeto" : `Passo ${displayStep} de 7`;
+      }
+      if (progressBar) {
+        progressBar.setAttribute("aria-valuenow", String(currentStep + 1));
+      }
+
+      // Back button visibility
+      if (backBtn) {
+        backBtn.hidden = currentStep === 0;
+      }
+
+      // Next button behavior / visibility
+      if (nextBtn) {
+        if (isSummary) {
+          nextBtn.hidden = true;
+        } else {
+          nextBtn.hidden = false;
+          nextBtn.textContent = currentStep === 6 ? "Ver resumo" : "Avançar";
+        }
+      }
+
+      if (isSummary) {
+        renderSummary();
+      }
+
+      if (announce) {
+        announce.textContent = isSummary ? "Resumo do projeto pronto." : `Passo ${displayStep} de 7 carregado.`;
+      }
+
+      validateStep();
+
+      // Smooth scroll back to wizard top if it scrolled away
+      wizard?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    // Navigation buttons
+    if (backBtn) {
+      backBtn.addEventListener("click", () => {
+        goToStep(currentStep - 1);
+      });
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        if (isStepValid(currentStep)) {
+          goToStep(currentStep + 1);
+        }
+      });
+    }
+
+    // Submission via WhatsApp
+    if (submitBtn) {
+      submitBtn.addEventListener("click", () => {
+        const message = buildQuoteWhatsappMessage(state);
+        const href = whatsappHref(message);
+        if (href.startsWith("https://wa.me/")) {
+          window.open(href, "_blank", "noopener,noreferrer");
+        } else {
+          // Fallback if WhatsApp is not yet configured
+          alert("Solicitação registrada com sucesso! Como o WhatsApp do Reginaldo está em fase de ativação, seus dados foram estruturados e salvos no resumo.");
+        }
+      });
+    }
+
+    // Initial validation
+    validateStep();
+  }
+</script>
+
+<style>
+  .quote-wizard {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-frame);
+    padding: var(--space-3);
+    box-shadow: var(--shadow-warm-soft);
+    margin-inline: auto;
+    max-width: 48rem; /* ~768px */
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @media (min-width: 640px) {
+    .quote-wizard {
+      padding: var(--space-5);
+    }
+  }
+
+  /* Header & Progress */
+  .qw-header {
+    margin-bottom: var(--space-4);
+  }
+
+  .qw-progress__meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--size-small);
+    color: var(--color-muted);
+    font-weight: 500;
+    margin-bottom: var(--space-1);
+  }
+
+  .qw-progress__track {
+    width: 100%;
+    height: 8px;
+    background: rgba(42, 36, 32, 0.08);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .qw-progress__fill {
+    height: 100%;
+    background: var(--color-accent);
+    border-radius: var(--radius-pill);
+    transition: width var(--motion-quick) var(--ease-reveal);
+  }
+
+  /* Panels */
+  .qw-panel {
+    animation: qw-fade-in var(--motion-quick) var(--ease-reveal);
+  }
+
+  @keyframes qw-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .qw-panel__question {
+    font-size: var(--size-h3);
+    color: var(--color-ink);
+    margin-bottom: 0.25rem;
+  }
+
+  .qw-panel__hint {
+    color: var(--color-muted);
+    font-size: var(--size-small);
+    margin-bottom: var(--space-4);
+  }
+
+  /* Grid Layouts */
+  .qw-grid {
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .qw-grid--2col {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .qw-grid--3col {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  @media (min-width: 640px) {
+    .qw-grid--3col {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .qw-grid--2col {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .qw-grid--list {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .qw-grid--chips {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--space-2);
+  }
+
+  /* Option Cards */
+  .qw-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-3) var(--space-2);
+    background: #ffffff;
+    border: 1.5px solid var(--color-line);
+    border-radius: var(--radius-control);
+    cursor: pointer;
+    position: relative;
+    transition: all var(--motion-instant) var(--ease-reveal);
+    gap: 0.5rem;
+  }
+
+  .qw-card:hover {
+    border-color: var(--color-accent);
+    background: #faf8f5;
+  }
+
+  .qw-card--selected {
+    border-color: var(--color-accent);
+    background: #f1f5f0;
+    box-shadow: 0 0 0 1px var(--color-accent);
+  }
+
+  .qw-card__icon {
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  .qw-card__label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .qw-card--horizontal {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem var(--space-3);
+    text-align: left;
+  }
+
+  .qw-card--horizontal .qw-card__label {
+    font-size: 0.95rem;
+  }
+
+  .qw-card--multi {
+    padding: var(--space-3) var(--space-2);
+  }
+
+  .qw-card__checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--color-line);
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--motion-instant) var(--ease-reveal);
+  }
+
+  .qw-card--selected .qw-card__checkbox {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+
+  .qw-card--selected .qw-card__checkbox::after {
+    content: "✓";
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: bold;
+  }
+
+  .qw-card__check {
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--color-line);
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .qw-card--selected .qw-card__check {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+  }
+
+  .qw-card--selected .qw-card__check::after {
+    content: "";
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Tabs (Step 3) */
+  .qw-tabs {
+    display: inline-flex;
+    background: rgba(42, 36, 32, 0.05);
+    padding: 4px;
+    border-radius: var(--radius-control);
+    margin-bottom: var(--space-3);
+  }
+
+  .qw-tab {
+    background: transparent;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: var(--size-small);
+    font-weight: 500;
+    color: var(--color-muted);
+    border-radius: calc(var(--radius-control) - 2px);
+    cursor: pointer;
+    transition: all var(--motion-instant) var(--ease-reveal);
+  }
+
+  .qw-tab--active {
+    background: #ffffff;
+    color: var(--color-ink);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  }
+
+  .qw-input-box {
+    background: #ffffff;
+    border: 1.5px solid var(--color-line);
+    border-radius: var(--radius-control);
+    padding: var(--space-4);
+  }
+
+  .qw-input-box__label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: var(--space-2);
+    font-size: 0.95rem;
+  }
+
+  .qw-input-addon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .qw-input-addon__suffix {
+    font-weight: 600;
+    color: var(--color-muted);
+  }
+
+  .qw-input-box__help {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin-top: var(--space-2);
+  }
+
+  /* Callout Banner */
+  .qw-callout {
+    display: flex;
+    gap: var(--space-2);
+    background: #fdf8eb;
+    border: 1px solid #ebd9a9;
+    border-radius: var(--radius-control);
+    padding: var(--space-3);
+    margin-top: var(--space-4);
+    align-items: flex-start;
+  }
+
+  .qw-callout__icon {
+    color: var(--color-accent-ochre);
+    flex-shrink: 0;
+  }
+
+  .qw-callout__content h4 {
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    margin: 0 0 0.25rem;
+    color: var(--color-ink);
+  }
+
+  .qw-callout__content p {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  /* Form Fields */
+  .qw-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .qw-form__row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+
+  @media (min-width: 640px) {
+    .qw-form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .qw-form__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .qw-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+
+  .qw-input {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 1.5px solid var(--color-line);
+    border-radius: var(--radius-control);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-ink);
+    background: #ffffff;
+    transition: border-color var(--motion-instant) var(--ease-reveal);
+  }
+
+  .qw-input:focus {
+    border-color: var(--color-accent);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(62, 79, 60, 0.15);
+  }
+
+  .qw-input--margin-top {
+    margin-top: 0.5rem;
+  }
+
+  .qw-textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .qw-photo-tip {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(42, 36, 32, 0.04);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-control);
+    font-size: 0.85rem;
+    color: var(--color-muted);
+  }
+
+  .qw-photo-tip__icon {
+    color: var(--color-accent);
+    flex-shrink: 0;
+  }
+
+  /* Summary Panel */
+  .qw-summary {
+    background: #ffffff;
+    border: 1.5px solid var(--color-line);
+    border-radius: var(--radius-control);
+    padding: var(--space-3);
+    margin-bottom: var(--space-3);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  :global(.qw-summary__row) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid rgba(219, 211, 196, 0.5);
+  }
+
+  :global(.qw-summary__row:last-child) {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  :global(.qw-summary__info) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  :global(.qw-summary__label) {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  :global(.qw-summary__val) {
+    font-size: 0.95rem;
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  :global(.qw-summary__edit) {
+    background: transparent;
+    border: none;
+    color: var(--color-accent);
+    font-size: var(--size-small);
+    font-weight: 500;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+  }
+
+  :global(.qw-summary__edit:hover) {
+    color: var(--color-accent-hover);
+  }
+
+  .qw-disclaimer {
+    background: rgba(42, 36, 32, 0.04);
+    border-left: 3px solid var(--color-accent-ochre);
+    padding: var(--space-2) var(--space-3);
+    border-radius: 0 var(--radius-control) var(--radius-control) 0;
+    margin-bottom: var(--space-4);
+  }
+
+  .qw-disclaimer p {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    margin: 0;
+    max-width: 100%;
+  }
+
+  .qw-submit-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  .qw-submit-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    gap: 0.6rem;
+  }
+
+  @media (min-width: 640px) {
+    .qw-submit-btn {
+      width: auto;
+      min-width: 280px;
+    }
+  }
+
+  /* Wizard Footer */
+  .qw-footer {
+    display: flex;
+    align-items: center;
+    margin-top: var(--space-5);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--color-line);
+  }
+
+  .qw-footer__spacer {
+    flex: 1;
+  }
+</style>
