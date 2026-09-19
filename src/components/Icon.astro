@@ -4,30 +4,8 @@
  * decorative — always paired with a text label by the caller, never
  * carrying meaning alone.
  */
-export type IconName =
-  | "roller"
-  | "brush"
-  | "drop"
-  | "wallCorner"
-  | "tape"
-  | "check"
-  | "phone"
-  | "clipboard"
-  | "whatsapp"
-  | "chevronDown"
-  | "arrows"
-  | "house"
-  | "building"
-  | "store"
-  | "moreHorizontal"
-  | "sofa"
-  | "bed"
-  | "cookingPot"
-  | "bathtub"
-  | "facade"
-  | "garage"
-  | "layers"
-  | "grid";
+import type { IconName } from "../types/icons";
+export type { IconName };
 
 interface Props {
   name: IconName;
