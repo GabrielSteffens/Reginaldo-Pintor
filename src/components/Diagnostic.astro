@@ -73,7 +73,18 @@ const FINISH_MODIFIERS = ["matte", "satin", "gloss", "unknown"];
       <section class="diag-panel" data-diag-panel data-step-index={totalSteps} hidden>
         <h3 class="diag-panel__question">{diagnosticCopy.resultHeading}</h3>
 
-        <ul class="diag-summary" data-diag-summary></ul>
+        <ul class="diag-summary" data-diag-summary>
+          {diagnosticSteps.map((step, index) => (
+            <li class="diag-summary__row" data-diag-summary-row data-step-index={index} hidden>
+              <span class="diag-summary__question">{step.question}</span>
+              <span class="chip diag-summary__value">
+                <span class="chip__swatch chip__swatch--accent" aria-hidden="true"></span>
+                <span data-diag-summary-value></span>
+              </span>
+              <button type="button" class="diag-summary__edit" data-diag-summary-edit>{diagnosticCopy.editLabel}</button>
+            </li>
+          ))}
+        </ul>
 
         <p class="diag-recommendation" data-diag-recommendation></p>
 
@@ -112,6 +123,7 @@ const FINISH_MODIFIERS = ["matte", "satin", "gloss", "unknown"];
   const progressBar = document.querySelector<HTMLElement>("[data-diag-progress]");
   const announce = document.querySelector<HTMLElement>("[data-diag-announce]");
   const summaryList = document.querySelector<HTMLElement>("[data-diag-summary]");
+  const summaryRows = Array.from(document.querySelectorAll<HTMLElement>("[data-diag-summary-row]"));
   const recommendationEl = document.querySelector<HTMLElement>("[data-diag-recommendation]");
   const primaryCta = document.querySelector<HTMLAnchorElement>("[data-diag-primary-cta]");
   const secondaryCta = document.querySelector<HTMLAnchorElement>("[data-diag-secondary-cta]");
@@ -201,33 +213,19 @@ const FINISH_MODIFIERS = ["matte", "satin", "gloss", "unknown"];
     }
 
     function renderSummary() {
-      summaryList!.innerHTML = "";
-      diagnosticSteps.forEach((step, index) => {
+      summaryRows.forEach((row) => {
+        const stepIndex = Number(row.dataset.stepIndex);
+        const step = diagnosticSteps[stepIndex];
+        if (!step) return;
+
         const value = getAnswerValue(step);
         const displayValue = Array.isArray(value) ? value.join(", ") : value;
-        if (!displayValue) return;
 
-        const li = document.createElement("li");
-        li.className = "diag-summary__row";
-
-        const question = document.createElement("span");
-        question.className = "diag-summary__question";
-        question.textContent = step.question;
-
-        const chip = document.createElement("span");
-        chip.className = "chip diag-summary__value";
-        const swatch = document.createElement("span");
-        swatch.className = "chip__swatch chip__swatch--accent";
-        chip.append(swatch, document.createTextNode(displayValue));
-
-        const editBtn = document.createElement("button");
-        editBtn.type = "button";
-        editBtn.className = "diag-summary__edit";
-        editBtn.textContent = diagnosticCopy.editLabel;
-        editBtn.addEventListener("click", () => goToStep(index));
-
-        li.append(question, chip, editBtn);
-        summaryList!.appendChild(li);
+        row.hidden = !displayValue;
+        if (displayValue) {
+          const valueEl = row.querySelector<HTMLElement>("[data-diag-summary-value]");
+          if (valueEl) valueEl.textContent = displayValue;
+        }
       });
 
       recommendationEl!.textContent = buildRecommendation(answers);
@@ -315,12 +313,21 @@ const FINISH_MODIFIERS = ["matte", "satin", "gloss", "unknown"];
       });
     });
 
+    summaryRows.forEach((row) => {
+      const stepIndex = Number(row.dataset.stepIndex);
+      const editBtn = row.querySelector<HTMLButtonElement>("[data-diag-summary-edit]");
+      editBtn?.addEventListener("click", () => goToStep(stepIndex));
+    });
+
     openBtn.addEventListener("click", () => {
       dialog.showModal();
       showStep(currentIndex, false);
     });
 
     closeBtn.addEventListener("click", () => dialog.close());
+
+    primaryCta.addEventListener("click", () => dialog.close());
+    secondaryCta.addEventListener("click", () => dialog.close());
 
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) dialog.close();
@@ -350,9 +357,9 @@ const FINISH_MODIFIERS = ["matte", "satin", "gloss", "unknown"];
     border: none;
     padding: 0;
     width: 100%;
-    height: 100%;
+    height: 100dvh;
     max-width: 100%;
-    max-height: 100%;
+    max-height: 100dvh;
     background: var(--color-surface);
     color: var(--color-ink);
   }

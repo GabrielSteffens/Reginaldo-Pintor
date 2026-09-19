@@ -16,7 +16,6 @@ export const nav = {
     { href: "#processo", label: "Como funciona" },
     { href: "#portfolio", label: "Portfólio" },
     { href: "#paleta-de-cores", label: "Paleta de Cores" },
-    { href: "#diagnostico", label: "Diagnóstico" },
     { href: "#faq", label: "Dúvidas" },
   ],
   ctaLabel: "Solicitar orçamento",

@@ -10,11 +10,11 @@ import Portfolio from "../components/Portfolio.astro";
 import ColorPalettes from "../components/ColorPalettes.astro";
 import WhyProfessional from "../components/WhyProfessional.astro";
 import ServiceAreas from "../components/ServiceAreas.astro";
-import Diagnostic from "../components/Diagnostic.astro";
 import Testimonials from "../components/Testimonials.astro";
 import Faq from "../components/Faq.astro";
 import FinalCta from "../components/FinalCta.astro";
 import Contact from "../components/Contact.astro";
+import Diagnostic from "../components/Diagnostic.astro";
 import Footer from "../components/Footer.astro";
 import FloatingWhatsapp from "../components/FloatingWhatsapp.astro";
 import { showTestimonialInvitation } from "../data/testimonials";
@@ -37,11 +37,11 @@ const showTestimonials = testimonials.length > 0 || showTestimonialInvitation;
     <ColorPalettes />
     <WhyProfessional />
     <ServiceAreas />
-    <Diagnostic />
     {showTestimonials && <Testimonials />}
     <Faq />
     <FinalCta />
     <Contact />
+    <Diagnostic />
   </main>
   <Footer />
   <FloatingWhatsapp />
