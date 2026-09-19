@@ -60,7 +60,7 @@ export const services: Service[] = [
   },
   {
     id: "retoques-repintura",
-    enabled: true,
+    enabled: false,
     title: "Retoques e repintura",
     shortDescription:
       "Renovação de ambientes já pintados, com acabamento uniforme.",
