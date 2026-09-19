@@ -11,6 +11,12 @@ export type ServiceCategory = "interior" | "exterior" | "specialty";
 export type SwatchColor = "accent" | "accentOchre" | "putty";
 export type ServiceIcon = "roller" | "brush" | "drop" | "wallCorner" | "tape";
 
+export interface ServiceImage {
+  src: string;
+  alt: string;
+  label: string;
+}
+
 export interface Service {
   id: string;
   enabled: boolean;
@@ -19,6 +25,7 @@ export interface Service {
   icon: ServiceIcon;
   /** Real photo path once available; falls back to a swatch panel when null. */
   image: string | null;
+  gallery?: ServiceImage[];
   swatchColor: SwatchColor;
   details: string[] | null;
   ctaLabel?: string;
@@ -35,28 +42,87 @@ export const services: Service[] = [
     shortDescription:
       "Pintura de paredes e tetos internos, com preparo completo da superfície.",
     icon: "roller",
-    image: null,
+    image: "/images/services/interna/sala.jpg",
+    gallery: [
+      {
+        src: "/images/services/interna/real-1.jpg",
+        alt: "Pintura interna residencial - Reginaldo Pintor",
+        label: "Paredes e Tetos • Acabamento Fino",
+      },
+      {
+        src: "/images/services/interna/real-2.jpg",
+        alt: "Preparação e acabamento de ambientes internos",
+        label: "Pintura Residencial • Cobertura Homogênea",
+      },
+      {
+        src: "/images/services/interna/real-3.jpg",
+        alt: "Pintura interna com recortes precisos",
+        label: "Recortes e Alinhamentos Precisos",
+      },
+      {
+        src: "/images/services/interna/real-4.jpg",
+        alt: "Proteção de rodapés e pintura uniforme",
+        label: "Cuidado com Pisos e Rodapés",
+      },
+      {
+        src: "/images/services/interna/real-5.jpg",
+        alt: "Acabamento de alto padrão em pintura interna",
+        label: "Tons Suaves e Acabamento Limpo",
+      },
+      {
+        src: "/images/services/interna/real-6.jpg",
+        alt: "Ambiente residencial renovado",
+        label: "Ambiente Concluído com Brilho Uniforme",
+      },
+    ],
     swatchColor: "accent",
     category: "interior",
-    featured: true,
+    featured: false,
     order: 1,
     details: [
-      "Proteção de móveis e pisos",
-      "Correção de imperfeições na superfície",
-      "Aplicação das demãos necessárias para um acabamento uniforme",
+      "Proteção total de pisos, rodapés e móveis",
+      "Correção e lixamento prévio de imperfeições",
+      "Aplicação de demãos para acabamento homogêneo",
     ],
   },
   {
     id: "pintura-externa",
     enabled: true,
     title: "Pintura externa",
-    shortDescription: "Pintura de fachadas e áreas externas residenciais.",
+    shortDescription: "Pintura de fachadas, muros e áreas externas residenciais.",
     icon: "brush",
-    image: null,
+    image: "/images/services/externa/real-1.jpg",
+    gallery: [
+      {
+        src: "/images/services/externa/real-1.jpg",
+        alt: "Pintura externa de fachada residencial - Reginaldo Pintor",
+        label: "Fachada Residencial • Proteção Climática",
+      },
+      {
+        src: "/images/services/externa/real-2.jpg",
+        alt: "Pintura de muro e perímetro externo",
+        label: "Muros e Perímetro • Acabamento Resistente",
+      },
+      {
+        src: "/images/services/externa/real-3.jpg",
+        alt: "Pintura de beirais e paredes externas",
+        label: "Proteção contra Sol e Chuva",
+      },
+      {
+        src: "/images/services/externa/real-4.jpg",
+        alt: "Pintura externa de sobrado residencial",
+        label: "Fachadas e Áreas Externas",
+      },
+    ],
     swatchColor: "accentOchre",
     category: "exterior",
+    featured: false,
     order: 2,
-    details: null,
+    details: [
+      "Tratamento de trincas, fissuras e impermeabilização",
+      "Tintas premium resistentes a sol e chuva",
+      "Pintura completa de fachadas, muros e beirais",
+    ],
   },
   {
     id: "retoques-repintura",

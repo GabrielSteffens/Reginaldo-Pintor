@@ -1,15 +1,10 @@
 ---
-// Implements docs §14 — the data-driven services catalog with a featured
-// tile + flexible grid, instead of a uniform SaaS card kit.
+// Implements docs §14 — data-driven services catalog with 2 equal-sized square carousel cards.
 import { enabledServices } from "../data/services";
 import { whatsappHref } from "../utils/whatsapp";
 import { services as servicesCopy } from "../content/copy";
-import Icon from "./Icon.astro";
-import SwatchPanel from "./SwatchPanel.astro";
 
 const items = enabledServices();
-const featured = items.find((s) => s.featured) ?? items[0];
-const rest = items.filter((s) => s.id !== featured?.id);
 ---
 
 <section id="servicos" class="section services">
@@ -20,137 +15,489 @@ const rest = items.filter((s) => s.id !== featured?.id);
     </div>
 
     <div class="services__grid">
-      {featured && (
-        <a class="service-card service-card--featured" href={whatsappHref(`Quero orçamento para ${featured.title.toLowerCase()}.`)} data-reveal>
-          <SwatchPanel color={featured.swatchColor} ratio="16 / 10">
-            <Icon name={featured.icon} size={40} />
-          </SwatchPanel>
+      {items.map((service) => (
+        <article class="service-card" data-service-carousel>
+          <!-- Carousel Square Frame -->
+          <div class="service-carousel" aria-roledescription="carrossel" aria-label={`Galeria de fotos de ${service.title}`}>
+            <div class="service-carousel__viewport">
+              {service.gallery?.map((slide, idx) => (
+                <div
+                  class={`service-carousel__slide ${idx === 0 ? "is-active" : ""}`}
+                  data-slide-index={idx}
+                  aria-hidden={idx === 0 ? "false" : "true"}
+                >
+                  <img
+                    src={slide.src}
+                    alt={slide.alt}
+                    loading="lazy"
+                    width="640"
+                    height="640"
+                    class="service-carousel__img"
+                  />
+                  <div class="service-carousel__caption">
+                    <span class="service-carousel__caption-text">{slide.label}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <!-- Navigation Controls -->
+            <button
+              type="button"
+              class="service-carousel__nav service-carousel__nav--prev"
+              data-nav="prev"
+              aria-label={`Foto anterior de ${service.title}`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"></polyline>
+              </svg>
+            </button>
+
+            <button
+              type="button"
+              class="service-carousel__nav service-carousel__nav--next"
+              data-nav="next"
+              aria-label={`Próxima foto de ${service.title}`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </button>
+
+            <!-- Dots Pagination -->
+            <div class="service-carousel__dots" role="tablist" aria-label="Indicador de foto">
+              {service.gallery?.map((_, idx) => (
+                <button
+                  type="button"
+                  class={`service-carousel__dot ${idx === 0 ? "is-active" : ""}`}
+                  data-dot-index={idx}
+                  role="tab"
+                  aria-selected={idx === 0 ? "true" : "false"}
+                  aria-label={`Foto ${idx + 1}`}
+                ></button>
+              ))}
+            </div>
+          </div>
+
+          <!-- Card Content -->
           <div class="service-card__body">
-            <h3>{featured.title}</h3>
-            <p>{featured.shortDescription}</p>
-            {featured.details && (
+            <div class="service-card__meta">
+              <span class="chip service-card__badge">
+                <span class={`chip__swatch chip__swatch--${service.swatchColor}`}></span>
+                <span>{service.category === "interior" ? "Ambientes Internos" : "Áreas Externas"}</span>
+              </span>
+            </div>
+
+            <h3 class="service-card__title">{service.title}</h3>
+            <p class="service-card__desc">{service.shortDescription}</p>
+
+            {service.details && (
               <ul class="service-card__details">
-                {featured.details.map((d) => <li>{d}</li>)}
+                {service.details.map((d) => (
+                  <li>
+                    <svg class="service-card__check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                    <span>{d}</span>
+                  </li>
+                ))}
               </ul>
             )}
-            <span class="service-card__cta">Quero orçamento para {featured.title.toLowerCase()}</span>
-          </div>
-        </a>
-      )}
 
-      <div class="services__rest">
-        {rest.map((service) => (
-          <a class="service-card" href={whatsappHref(`Quero orçamento para ${service.title.toLowerCase()}.`)}>
-            <SwatchPanel color={service.swatchColor} ratio="4 / 3">
-              <Icon name={service.icon} size={28} />
-            </SwatchPanel>
-            <div class="service-card__body">
-              <h3>{service.title}</h3>
-              <p>{service.shortDescription}</p>
-              <span class="service-card__cta">Quero orçamento para {service.title.toLowerCase()}</span>
+            <!-- Actions -->
+            <div class="service-card__actions">
+              <a
+                class="btn btn--primary service-card__cta-btn"
+                href={whatsappHref(`Olá, Reginaldo! Gostaria de solicitar um orçamento para ${service.title.toLowerCase()}.`)}
+              >
+                <span>Solicitar orçamento</span>
+              </a>
+
+              <a class="service-card__link" href="#contato">
+                <span>Simular no assistente de orçamento</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </a>
             </div>
-          </a>
-        ))}
-      </div>
+          </div>
+        </article>
+      ))}
     </div>
   </div>
 </section>
 
 <script>
-  const featured = document.querySelector<HTMLElement>("[data-reveal]");
-  if (featured && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            featured.classList.add("service-card--revealed");
-            observer.disconnect();
-          }
+  function setupServiceCarousels() {
+    const carousels = document.querySelectorAll<HTMLElement>("[data-service-carousel]");
+
+    carousels.forEach((carousel) => {
+      const slides = carousel.querySelectorAll<HTMLElement>("[data-slide-index]");
+      const dots = carousel.querySelectorAll<HTMLElement>("[data-dot-index]");
+      const prevBtn = carousel.querySelector<HTMLButtonElement>("[data-nav='prev']");
+      const nextBtn = carousel.querySelector<HTMLButtonElement>("[data-nav='next']");
+
+      if (!slides.length) return;
+
+      let currentIndex = 0;
+      let autoplayTimer: number | null = null;
+
+      function showSlide(index: number) {
+        currentIndex = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, i) => {
+          const isActive = i === currentIndex;
+          slide.classList.toggle("is-active", isActive);
+          slide.setAttribute("aria-hidden", isActive ? "false" : "true");
         });
-      },
-      { threshold: 0.3 }
-    );
-    observer.observe(featured);
+
+        dots.forEach((dot, i) => {
+          const isActive = i === currentIndex;
+          dot.classList.toggle("is-active", isActive);
+          dot.setAttribute("aria-selected", isActive ? "true" : "false");
+        });
+      }
+
+      function nextSlide() {
+        showSlide(currentIndex + 1);
+      }
+
+      function prevSlide() {
+        showSlide(currentIndex - 1);
+      }
+
+      function startAutoplay() {
+        stopAutoplay();
+        autoplayTimer = window.setInterval(nextSlide, 4500);
+      }
+
+      function stopAutoplay() {
+        if (autoplayTimer !== null) {
+          clearInterval(autoplayTimer);
+          autoplayTimer = null;
+        }
+      }
+
+      prevBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        prevSlide();
+        stopAutoplay();
+      });
+
+      nextBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        nextSlide();
+        stopAutoplay();
+      });
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener("click", (e) => {
+          e.preventDefault();
+          showSlide(i);
+          stopAutoplay();
+        });
+      });
+
+      // Pause on hover
+      carousel.addEventListener("mouseenter", stopAutoplay);
+      carousel.addEventListener("mouseleave", startAutoplay);
+
+      // Touch swipe support
+      let touchStartX = 0;
+      let touchEndX = 0;
+
+      carousel.addEventListener(
+        "touchstart",
+        (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+          stopAutoplay();
+        },
+        { passive: true }
+      );
+
+      carousel.addEventListener(
+        "touchend",
+        (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          const diff = touchStartX - touchEndX;
+          if (Math.abs(diff) > 40) {
+            if (diff > 0) nextSlide();
+            else prevSlide();
+          }
+          startAutoplay();
+        },
+        { passive: true }
+      );
+
+      // Start autoplay if not reduced motion
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        startAutoplay();
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupServiceCarousels);
   } else {
-    featured?.classList.add("service-card--revealed");
+    setupServiceCarousels();
   }
 </script>
 
 <style>
+  .services {
+    background-color: var(--color-canvas);
+  }
+
   .services__grid {
     display: grid;
-    gap: var(--space-3);
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
   }
 
-  .services__rest {
-    display: grid;
-    gap: var(--space-3);
+  @media (min-width: 768px) {
+    .services__grid {
+      grid-template-columns: repeat(2, 1fr);
+      align-items: stretch;
+    }
   }
 
+  /* Service Card */
   .service-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-frame);
+    overflow: hidden;
+    box-shadow: var(--shadow-warm);
+    transition: transform var(--motion-quick) var(--ease-reveal),
+      box-shadow var(--motion-quick) var(--ease-reveal);
+  }
+
+  .service-card:hover {
+    box-shadow: 0 14px 34px rgba(42, 36, 32, 0.12);
+  }
+
+  /* Carousel Square Container */
+  .service-carousel {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-line);
+    user-select: none;
+  }
+
+  .service-carousel__viewport {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .service-carousel__slide {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--motion-reveal) var(--ease-reveal);
+  }
+
+  .service-carousel__slide.is-active {
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+  }
+
+  .service-carousel__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: block;
-    text-decoration: none;
-    color: inherit;
   }
 
+  /* Caption Badge */
+  .service-carousel__caption {
+    position: absolute;
+    bottom: var(--space-3);
+    left: var(--space-2);
+    right: var(--space-2);
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .service-carousel__caption-text {
+    background: rgba(30, 26, 23, 0.78);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+  }
+
+  /* Navigation Arrows */
+  .service-carousel__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: var(--color-ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-warm-soft);
+    z-index: 5;
+    transition: all var(--motion-instant) ease;
+    padding: 0;
+  }
+
+  .service-carousel__nav:hover {
+    background: #ffffff;
+    transform: translateY(-50%) scale(1.08);
+    color: var(--color-accent);
+  }
+
+  .service-carousel__nav--prev {
+    left: var(--space-1);
+  }
+
+  .service-carousel__nav--next {
+    right: var(--space-1);
+  }
+
+  /* Dots */
+  .service-carousel__dots {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 5;
+  }
+
+  .service-carousel__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.55);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: all var(--motion-quick) ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .service-carousel__dot.is-active {
+    width: 22px;
+    background: #ffffff;
+  }
+
+  /* Card Body */
   .service-card__body {
-    padding-top: var(--space-2);
+    padding: var(--space-3) var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
   }
 
-  .service-card__body h3 {
-    margin-bottom: 0.35em;
+  .service-card__meta {
+    margin-bottom: var(--space-1);
   }
 
+  .service-card__badge {
+    display: inline-flex;
+    font-size: 0.78rem;
+  }
+
+  .service-card__title {
+    font-size: var(--size-h3);
+    color: var(--color-ink);
+    margin: 0 0 0.35em;
+  }
+
+  .service-card__desc {
+    font-size: var(--size-small);
+    color: var(--color-muted);
+    line-height: 1.5;
+    margin: 0 0 var(--space-2);
+  }
+
+  /* Checklist */
   .service-card__details {
-    margin: 0.75em 0 0;
-    padding-left: 1.1em;
-    font-size: var(--size-small);
+    list-style: none;
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    flex: 1;
   }
 
-  .service-card__cta {
-    display: inline-block;
-    margin-top: 0.75em;
-    font-size: var(--size-small);
+  .service-card__details li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-ink);
+    line-height: 1.4;
+  }
+
+  .service-card__check {
+    color: var(--color-accent);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Actions */
+  .service-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-top: auto;
+  }
+
+  .service-card__cta-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .service-card__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
     color: var(--color-accent);
     text-decoration: underline;
     text-underline-offset: 3px;
+    padding: 0.3rem 0;
+    transition: opacity var(--motion-instant) ease;
   }
 
-  .service-card :global(.swatch-panel) {
-    transition: filter var(--motion-instant) var(--ease-reveal);
-  }
-
-  .service-card:hover :global(.swatch-panel),
-  .service-card:focus-visible :global(.swatch-panel) {
-    filter: brightness(0.92);
-  }
-
-  .service-card--featured :global(.swatch-panel) {
-    transform: scale(0.98);
-    filter: saturate(0.7);
-    transition: transform var(--motion-reveal) var(--ease-reveal),
-      filter var(--motion-reveal) var(--ease-reveal);
-  }
-
-  .service-card--featured.service-card--revealed :global(.swatch-panel) {
-    transform: scale(1);
-    filter: saturate(1);
-  }
-
-  @media (min-width: 700px) {
-    .services__rest {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1000px) {
-    .services__grid {
-      grid-template-columns: 1.4fr 1fr;
-      align-items: start;
-    }
-
-    .services__rest {
-      grid-template-columns: 1fr;
-    }
+  .service-card__link:hover {
+    opacity: 0.8;
   }
 </style>
