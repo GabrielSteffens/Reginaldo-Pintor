@@ -15,6 +15,7 @@ export const nav = {
     { href: "#transformacao", label: "Transformação" },
     { href: "#processo", label: "Como funciona" },
     { href: "#portfolio", label: "Portfólio" },
+    { href: "#diagnostico", label: "Diagnóstico" },
     { href: "#faq", label: "Dúvidas" },
   ],
   ctaLabel: "Solicitar orçamento",
@@ -62,6 +63,23 @@ export const portfolio = {
     "Estamos documentando nossos projetos. Em breve, esta seção vai reunir fotos reais dos trabalhos realizados.",
   introPopulated: "Projetos reais, com fotos reais.",
   emptyCtaLabel: "Quer ver um exemplo agora? Fale com a gente pelo WhatsApp",
+};
+
+export const diagnostic = {
+  teaserHeading: "Diagnóstico de pintura",
+  teaserIntro:
+    "Responda 6 perguntas rápidas e veja um resumo do seu projeto antes de pedir um orçamento.",
+  teaserCtaLabel: "Começar diagnóstico",
+  closeLabel: "Fechar",
+  backLabel: "Voltar",
+  nextLabel: "Avançar",
+  resultCtaLabel: "Ver resultado",
+  stepLabel: (current: number, total: number) => `Passo ${current} de ${total}`,
+  resultHeading: "Seu perfil de pintura",
+  editLabel: "Editar",
+  conversionHeading: "Quer transformar esse diagnóstico em um orçamento?",
+  primaryCtaLabel: "Calcular meu orçamento",
+  secondaryCtaLabel: "Falar com o Reginaldo",
 };
 
 export const whyProfessional = {
