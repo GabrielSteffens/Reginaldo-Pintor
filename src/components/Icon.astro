@@ -4,19 +4,33 @@
  * decorative — always paired with a text label by the caller, never
  * carrying meaning alone.
  */
+export type IconName =
+  | "roller"
+  | "brush"
+  | "drop"
+  | "wallCorner"
+  | "tape"
+  | "check"
+  | "phone"
+  | "clipboard"
+  | "whatsapp"
+  | "chevronDown"
+  | "arrows"
+  | "house"
+  | "building"
+  | "store"
+  | "moreHorizontal"
+  | "sofa"
+  | "bed"
+  | "cookingPot"
+  | "bathtub"
+  | "facade"
+  | "garage"
+  | "layers"
+  | "grid";
+
 interface Props {
-  name:
-    | "roller"
-    | "brush"
-    | "drop"
-    | "wallCorner"
-    | "tape"
-    | "check"
-    | "phone"
-    | "clipboard"
-    | "whatsapp"
-    | "chevronDown"
-    | "arrows";
+  name: IconName;
   size?: number;
   class?: string;
 }
@@ -108,6 +122,131 @@ const { name, size = 20, class: className } = Astro.props;
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
       <path d="M8 8 4 12l4 4" />
       <path d="M16 8l4 4-4 4" />
+    </svg>
+  )
+}
+{
+  name === "house" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <path d="M4 11 12 4l8 7" />
+      <path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9" />
+      <path d="M10 20v-6h4v6" />
+    </svg>
+  )
+}
+{
+  name === "building" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <rect x="6" y="3" width="12" height="18" rx="1" />
+      <line x1="9" y1="7" x2="9" y2="9.5" />
+      <line x1="15" y1="7" x2="15" y2="9.5" />
+      <line x1="9" y1="12" x2="9" y2="14.5" />
+      <line x1="15" y1="12" x2="15" y2="14.5" />
+      <line x1="10" y1="21" x2="10" y2="17" />
+      <line x1="14" y1="21" x2="14" y2="17" />
+    </svg>
+  )
+}
+{
+  name === "store" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <path d="M4 9 5 4h14l1 5" />
+      <path d="M4 9v10a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9" />
+      <path d="M4 9a2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0 2.5 2.5 0 0 0 5 0" />
+      <line x1="10" y1="20" x2="10" y2="14" />
+      <line x1="14" y1="20" x2="14" y2="14" />
+    </svg>
+  )
+}
+{
+  name === "moreHorizontal" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <circle cx="5" cy="12" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" />
+      <circle cx="19" cy="12" r="1.3" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+{
+  name === "sofa" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <path d="M5 12V9a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3" />
+      <rect x="3" y="12" width="18" height="6" rx="1.5" />
+      <line x1="5" y1="18" x2="5" y2="20" />
+      <line x1="19" y1="18" x2="19" y2="20" />
+    </svg>
+  )
+}
+{
+  name === "bed" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <path d="M3 19v-7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7" />
+      <path d="M3 16h18" />
+      <rect x="5" y="10" width="6" height="4" rx="1" />
+      <line x1="3" y1="19" x2="3" y2="21" />
+      <line x1="21" y1="19" x2="21" y2="21" />
+    </svg>
+  )
+}
+{
+  name === "cookingPot" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <path d="M4 11h16v3a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5v-3Z" />
+      <line x1="2" y1="11" x2="4" y2="11" />
+      <line x1="20" y1="11" x2="22" y2="11" />
+      <line x1="9" y1="8" x2="9" y2="5" />
+      <line x1="15" y1="8" x2="15" y2="5" />
+    </svg>
+  )
+}
+{
+  name === "bathtub" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <path d="M3 12h18v3a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-3Z" />
+      <path d="M5 12V8a2 2 0 0 1 2-2h1" />
+      <line x1="6" y1="7" x2="6" y2="9" />
+      <line x1="3" y1="19" x2="3" y2="21" />
+      <line x1="21" y1="19" x2="21" y2="21" />
+    </svg>
+  )
+}
+{
+  name === "facade" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <rect x="4" y="4" width="16" height="16" rx="1" />
+      <rect x="7" y="7" width="4" height="4" />
+      <rect x="13" y="7" width="4" height="4" />
+      <path d="M10 20v-6a2 2 0 0 1 2-2 2 2 0 0 1 2 2v6" />
+    </svg>
+  )
+}
+{
+  name === "garage" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <path d="M3 10 12 4l9 6" />
+      <path d="M4 10v10h16V10" />
+      <rect x="7" y="12" width="10" height="8" />
+      <line x1="7" y1="15" x2="17" y2="15" />
+      <line x1="7" y1="18" x2="17" y2="18" />
+    </svg>
+  )
+}
+{
+  name === "layers" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <path d="M12 3 21 8 12 13 3 8Z" />
+      <path d="M3 13l9 5 9-5" />
+      <path d="M3 18l9 5 9-5" />
+    </svg>
+  )
+}
+{
+  name === "grid" && (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class={className} aria-hidden="true">
+      <rect x="3" y="3" width="8" height="8" rx="1" />
+      <rect x="13" y="3" width="8" height="8" rx="1" />
+      <rect x="3" y="13" width="8" height="8" rx="1" />
+      <rect x="13" y="13" width="8" height="8" rx="1" />
     </svg>
   )
 }
