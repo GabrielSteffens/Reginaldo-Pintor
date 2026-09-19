@@ -93,12 +93,19 @@ export const businessConfig: BusinessConfig = {
 
   address: {
     showPublicly: false,
+    city: "Florianópolis",
+    state: "SC",
   },
 
-  // CONFIGURE — the confirmed base city, e.g. "Porto Alegre".
-  city: null,
-  // CONFIGURE — confirmed neighborhoods/cities served, e.g. ["Bairro A", "Bairro B"].
-  neighborhoods: [],
+  // Base city/region for metadata and copy
+  city: "Florianópolis e Região",
+  // Confirmed cities/regions served
+  neighborhoods: [
+    "Florianópolis",
+    "São José",
+    "Palhoça",
+    "Biguaçu",
+  ],
 
   // CONFIGURE — e.g. [{ day: "Seg", opens: "08:00", closes: "18:00" }, ...]
   businessHours: null,

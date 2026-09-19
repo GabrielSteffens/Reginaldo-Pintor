@@ -197,9 +197,9 @@ const neighborhoods = businessConfig.neighborhoods;
           <label for="qw-location" class="qw-label">Bairro / Cidade do imóvel *</label>
           {neighborhoods && neighborhoods.length > 0 ? (
             <select id="qw-location" data-qw-location class="qw-input">
-              <option value="">Selecione seu bairro...</option>
+              <option value="">Selecione sua cidade / região...</option>
               {neighborhoods.map((n) => <option value={n}>{n}</option>)}
-              <option value="__other__">Outro bairro ou cidade...</option>
+              <option value="__other__">Outra cidade ou bairro...</option>
             </select>
           ) : (
             <input type="text" id="qw-location" data-qw-location class="qw-input" placeholder="Ex: Centro / Zona Sul" required />
