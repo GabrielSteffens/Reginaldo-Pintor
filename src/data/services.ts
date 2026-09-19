@@ -42,35 +42,35 @@ export const services: Service[] = [
     shortDescription:
       "Pintura de paredes e tetos internos, com preparo completo da superfície.",
     icon: "roller",
-    image: "/images/services/interna/sala.jpg",
+    image: "/images/services/interna/foto-1.jpg",
     gallery: [
       {
-        src: "/images/services/interna/real-1.jpg",
+        src: "/images/services/interna/foto-1.jpg",
         alt: "Pintura interna residencial - Reginaldo Pintor",
         label: "Paredes e Tetos • Acabamento Fino",
       },
       {
-        src: "/images/services/interna/real-2.jpg",
+        src: "/images/services/interna/foto-2.jpg",
         alt: "Preparação e acabamento de ambientes internos",
         label: "Pintura Residencial • Cobertura Homogênea",
       },
       {
-        src: "/images/services/interna/real-3.jpg",
+        src: "/images/services/interna/foto-3.jpg",
         alt: "Pintura interna com recortes precisos",
         label: "Recortes e Alinhamentos Precisos",
       },
       {
-        src: "/images/services/interna/real-4.jpg",
+        src: "/images/services/interna/foto-4.jpg",
         alt: "Proteção de rodapés e pintura uniforme",
         label: "Cuidado com Pisos e Rodapés",
       },
       {
-        src: "/images/services/interna/real-5.jpg",
+        src: "/images/services/interna/foto-5.jpg",
         alt: "Acabamento de alto padrão em pintura interna",
         label: "Tons Suaves e Acabamento Limpo",
       },
       {
-        src: "/images/services/interna/real-6.jpg",
+        src: "/images/services/interna/foto-6.jpg",
         alt: "Ambiente residencial renovado",
         label: "Ambiente Concluído com Brilho Uniforme",
       },
@@ -91,25 +91,25 @@ export const services: Service[] = [
     title: "Pintura externa",
     shortDescription: "Pintura de fachadas, muros e áreas externas residenciais.",
     icon: "brush",
-    image: "/images/services/externa/real-1.jpg",
+    image: "/images/services/externa/foto-1.jpg",
     gallery: [
       {
-        src: "/images/services/externa/real-1.jpg",
+        src: "/images/services/externa/foto-1.jpg",
         alt: "Pintura externa de fachada residencial - Reginaldo Pintor",
         label: "Fachada Residencial • Proteção Climática",
       },
       {
-        src: "/images/services/externa/real-2.jpg",
+        src: "/images/services/externa/foto-2.jpg",
         alt: "Pintura de muro e perímetro externo",
         label: "Muros e Perímetro • Acabamento Resistente",
       },
       {
-        src: "/images/services/externa/real-3.jpg",
+        src: "/images/services/externa/foto-3.jpg",
         alt: "Pintura de beirais e paredes externas",
         label: "Proteção contra Sol e Chuva",
       },
       {
-        src: "/images/services/externa/real-4.jpg",
+        src: "/images/services/externa/foto-4.jpg",
         alt: "Pintura externa de sobrado residencial",
         label: "Fachadas e Áreas Externas",
       },

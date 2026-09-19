@@ -14,7 +14,6 @@ export const nav = {
     { href: "#servicos", label: "Serviços" },
     { href: "#transformacao", label: "Transformação" },
     { href: "#processo", label: "Como funciona" },
-    { href: "#portfolio", label: "Portfólio" },
     { href: "#paleta-de-cores", label: "Paleta de Cores" },
     { href: "#faq", label: "Dúvidas" },
   ],
