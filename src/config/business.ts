@@ -87,10 +87,8 @@ export const businessConfig: BusinessConfig = {
   businessName: "Reginaldo Pinturas Residenciais",
   tagline: "Pintura que transforma o ambiente da sua casa.",
 
-  // CONFIGURE — replace with the real number once provided. Do not invent one.
-  phone: null,
-  // CONFIGURE — e.g. "5551999999999". Until set, WhatsApp CTAs link to #contato instead.
-  whatsappNumber: null,
+  phone: "(48) 98481-9526",
+  whatsappNumber: "5548984819526",
   email: null,
 
   address: {
