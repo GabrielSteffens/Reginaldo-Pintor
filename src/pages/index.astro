@@ -9,6 +9,7 @@ import WorkProcess from "../components/WorkProcess.astro";
 import Portfolio from "../components/Portfolio.astro";
 import WhyProfessional from "../components/WhyProfessional.astro";
 import ServiceAreas from "../components/ServiceAreas.astro";
+import Diagnostic from "../components/Diagnostic.astro";
 import Testimonials from "../components/Testimonials.astro";
 import Faq from "../components/Faq.astro";
 import FinalCta from "../components/FinalCta.astro";
@@ -34,6 +35,7 @@ const showTestimonials = testimonials.length > 0 || showTestimonialInvitation;
     <Portfolio />
     <WhyProfessional />
     <ServiceAreas />
+    <Diagnostic />
     {showTestimonials && <Testimonials />}
     <Faq />
     <FinalCta />

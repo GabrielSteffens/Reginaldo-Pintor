@@ -1,0 +1,642 @@
+---
+// src/components/Diagnostic.astro
+import { diagnosticSteps } from "../data/diagnostic";
+import { diagnostic as diagnosticCopy } from "../content/copy";
+import Icon from "./Icon.astro";
+import SwatchPanel from "./SwatchPanel.astro";
+
+const totalSteps = diagnosticSteps.length;
+const SIZE_MODIFIERS = ["small", "medium", "large", "full"];
+const FINISH_MODIFIERS = ["matte", "satin", "gloss", "unknown"];
+---
+
+<section id="diagnostico" class="section section--surface diagnostic-teaser">
+  <div class="container diagnostic-teaser__grid">
+    <SwatchPanel color="accentOchre" ratio="4 / 3" class="diagnostic-teaser__visual">
+      <Icon name="clipboard" size={40} />
+    </SwatchPanel>
+    <div class="diagnostic-teaser__body">
+      <h2>{diagnosticCopy.teaserHeading}</h2>
+      <p>{diagnosticCopy.teaserIntro}</p>
+      <button type="button" class="btn btn--primary" data-diag-open>
+        {diagnosticCopy.teaserCtaLabel}
+      </button>
+    </div>
+  </div>
+</section>
+
+<dialog class="diag-dialog" data-diag-dialog aria-labelledby="diag-dialog-title">
+  <div class="diag-dialog__inner">
+    <h2 id="diag-dialog-title" class="visually-hidden">{diagnosticCopy.teaserHeading}</h2>
+
+    <header class="diag-header">
+      <div class="diag-progress" role="progressbar" aria-valuemin="1" aria-valuemax={totalSteps} aria-valuenow="1" data-diag-progress>
+        <span class="diag-progress__track">
+          <span class="diag-progress__fill" data-diag-progress-fill></span>
+        </span>
+        <span class="diag-progress__label" data-diag-progress-label></span>
+      </div>
+      <button type="button" class="diag-close" data-diag-close aria-label={diagnosticCopy.closeLabel}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18" />
+        </svg>
+      </button>
+    </header>
+
+    <p class="visually-hidden" role="status" aria-live="polite" data-diag-announce></p>
+
+    <div class="diag-panels" data-diag-panels>
+      {diagnosticSteps.map((step, index) => (
+        <section class="diag-panel" data-diag-panel data-step-index={index} data-step-id={step.id} hidden={index !== 0}>
+          <h3 class="diag-panel__question">{step.question}</h3>
+
+          <div class:list={["diag-options", { "diag-options--compact": step.id === "size" || step.id === "finish" }]} role="group" aria-label={step.question}>
+            {step.options.map((option, optionIndex) => (
+              <button type="button" class="diag-option" data-diag-option data-value={option.value} aria-pressed="false">
+                {step.id === "size" && (
+                  <span class={`diag-size-swatch diag-size-swatch--${SIZE_MODIFIERS[optionIndex]}`} aria-hidden="true"></span>
+                )}
+                {step.id === "finish" && (
+                  <span class={`diag-finish-swatch diag-finish-swatch--${FINISH_MODIFIERS[optionIndex]}`} aria-hidden="true"></span>
+                )}
+                {step.id !== "size" && step.id !== "finish" && option.icon && (
+                  <Icon name={option.icon} size={26} class="diag-option__icon" />
+                )}
+                <span class="diag-option__label">{option.label}</span>
+                <span class="diag-option__indicator" aria-hidden="true"></span>
+              </button>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <section class="diag-panel" data-diag-panel data-step-index={totalSteps} hidden>
+        <h3 class="diag-panel__question">{diagnosticCopy.resultHeading}</h3>
+
+        <ul class="diag-summary" data-diag-summary></ul>
+
+        <p class="diag-recommendation" data-diag-recommendation></p>
+
+        <div class="diag-conversion">
+          <h4>{diagnosticCopy.conversionHeading}</h4>
+          <div class="diag-conversion__actions">
+            <a class="btn btn--primary" data-diag-primary-cta href="#contato">{diagnosticCopy.primaryCtaLabel}</a>
+            <a class="btn btn--secondary" data-diag-secondary-cta href="#contato">{diagnosticCopy.secondaryCtaLabel}</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer class="diag-footer">
+      <button type="button" class="btn btn--secondary" data-diag-back>{diagnosticCopy.backLabel}</button>
+      <button type="button" class="btn btn--primary" data-diag-next disabled>{diagnosticCopy.nextLabel}</button>
+    </footer>
+  </div>
+</dialog>
+
+<script>
+  import { diagnosticSteps, type DiagnosticStep, type DiagnosticAnswers } from "../data/diagnostic";
+  import { buildRecommendation, buildWhatsappSummary } from "../utils/diagnosticSummary";
+  import { whatsappHref, isWhatsappConfigured } from "../utils/whatsapp";
+  import { diagnostic as diagnosticCopy } from "../content/copy";
+
+  const dialog = document.querySelector<HTMLDialogElement>("[data-diag-dialog]");
+  const openBtn = document.querySelector<HTMLButtonElement>("[data-diag-open]");
+  const closeBtn = document.querySelector<HTMLButtonElement>("[data-diag-close]");
+  const backBtn = document.querySelector<HTMLButtonElement>("[data-diag-back]");
+  const nextBtn = document.querySelector<HTMLButtonElement>("[data-diag-next]");
+  const panelsWrapper = document.querySelector<HTMLElement>("[data-diag-panels]");
+  const panels = Array.from(document.querySelectorAll<HTMLElement>("[data-diag-panel]"));
+  const progressFill = document.querySelector<HTMLElement>("[data-diag-progress-fill]");
+  const progressLabel = document.querySelector<HTMLElement>("[data-diag-progress-label]");
+  const progressBar = document.querySelector<HTMLElement>("[data-diag-progress]");
+  const announce = document.querySelector<HTMLElement>("[data-diag-announce]");
+  const summaryList = document.querySelector<HTMLElement>("[data-diag-summary]");
+  const recommendationEl = document.querySelector<HTMLElement>("[data-diag-recommendation]");
+  const primaryCta = document.querySelector<HTMLAnchorElement>("[data-diag-primary-cta]");
+  const secondaryCta = document.querySelector<HTMLAnchorElement>("[data-diag-secondary-cta]");
+
+  const ready =
+    dialog && openBtn && closeBtn && backBtn && nextBtn && panelsWrapper &&
+    progressFill && progressLabel && progressBar && announce &&
+    summaryList && recommendationEl && primaryCta && secondaryCta;
+
+  if (ready) {
+    const totalSteps = diagnosticSteps.length;
+    const RESULT_INDEX = totalSteps;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const answers: DiagnosticAnswers = {
+      propertyType: null,
+      areas: [],
+      condition: null,
+      objective: null,
+      size: null,
+      finish: null,
+    };
+
+    let currentIndex = 0;
+
+    function setSingleAnswer(step: DiagnosticStep, value: string) {
+      switch (step.id) {
+        case "propertyType":
+          answers.propertyType = value;
+          break;
+        case "condition":
+          answers.condition = value;
+          break;
+        case "objective":
+          answers.objective = value;
+          break;
+        case "size":
+          answers.size = value;
+          break;
+        case "finish":
+          answers.finish = value;
+          break;
+        default:
+          break;
+      }
+    }
+
+    function toggleAreaAnswer(value: string) {
+      const idx = answers.areas.indexOf(value);
+      if (idx >= 0) answers.areas.splice(idx, 1);
+      else answers.areas.push(value);
+    }
+
+    function getAnswerValue(step: DiagnosticStep): string | string[] | null {
+      switch (step.id) {
+        case "propertyType":
+          return answers.propertyType;
+        case "areas":
+          return answers.areas;
+        case "condition":
+          return answers.condition;
+        case "objective":
+          return answers.objective;
+        case "size":
+          return answers.size;
+        case "finish":
+          return answers.finish;
+        default:
+          return null;
+      }
+    }
+
+    function isStepAnswered(index: number): boolean {
+      const step = diagnosticSteps[index];
+      if (!step) return true;
+      return step.multiSelect ? answers.areas.length > 0 : Boolean(getAnswerValue(step));
+    }
+
+    function renderOptionsState(panel: HTMLElement, step: DiagnosticStep) {
+      const value = getAnswerValue(step);
+      panel.querySelectorAll<HTMLButtonElement>("[data-diag-option]").forEach((btn) => {
+        const optValue = btn.dataset.value ?? "";
+        const selected = Array.isArray(value) ? value.includes(optValue) : value === optValue;
+        btn.classList.toggle("diag-option--selected", selected);
+        btn.setAttribute("aria-pressed", String(selected));
+      });
+    }
+
+    function renderSummary() {
+      summaryList!.innerHTML = "";
+      diagnosticSteps.forEach((step, index) => {
+        const value = getAnswerValue(step);
+        const displayValue = Array.isArray(value) ? value.join(", ") : value;
+        if (!displayValue) return;
+
+        const li = document.createElement("li");
+        li.className = "diag-summary__row";
+
+        const question = document.createElement("span");
+        question.className = "diag-summary__question";
+        question.textContent = step.question;
+
+        const chip = document.createElement("span");
+        chip.className = "chip diag-summary__value";
+        const swatch = document.createElement("span");
+        swatch.className = "chip__swatch chip__swatch--accent";
+        chip.append(swatch, document.createTextNode(displayValue));
+
+        const editBtn = document.createElement("button");
+        editBtn.type = "button";
+        editBtn.className = "diag-summary__edit";
+        editBtn.textContent = diagnosticCopy.editLabel;
+        editBtn.addEventListener("click", () => goToStep(index));
+
+        li.append(question, chip, editBtn);
+        summaryList!.appendChild(li);
+      });
+
+      recommendationEl!.textContent = buildRecommendation(answers);
+
+      const configured = isWhatsappConfigured();
+      const summaryMessage = buildWhatsappSummary(answers);
+      primaryCta!.href = configured ? whatsappHref(summaryMessage) : "#contato";
+      secondaryCta!.href = configured
+        ? whatsappHref("Olá! Tenho uma dúvida sobre pintura residencial.")
+        : "#contato";
+    }
+
+    function updateFooter() {
+      const onResult = currentIndex === RESULT_INDEX;
+      backBtn!.disabled = currentIndex === 0;
+      nextBtn!.hidden = onResult;
+      if (!onResult) {
+        nextBtn!.textContent =
+          currentIndex === totalSteps - 1 ? diagnosticCopy.resultCtaLabel : diagnosticCopy.nextLabel;
+        nextBtn!.disabled = !isStepAnswered(currentIndex);
+      }
+    }
+
+    function updateProgress() {
+      const shownStep = Math.min(currentIndex + 1, totalSteps);
+      const pct = (shownStep / totalSteps) * 100;
+      progressFill!.style.width = `${pct}%`;
+      const label =
+        currentIndex === RESULT_INDEX
+          ? diagnosticCopy.resultHeading
+          : diagnosticCopy.stepLabel(shownStep, totalSteps);
+      progressLabel!.textContent = label;
+      progressBar!.setAttribute("aria-valuenow", String(shownStep));
+      announce!.textContent =
+        currentIndex === RESULT_INDEX
+          ? diagnosticCopy.resultHeading
+          : `${label}: ${diagnosticSteps[currentIndex]?.question ?? ""}`;
+    }
+
+    function applyStep(index: number) {
+      currentIndex = index;
+      panels.forEach((panel) => {
+        panel.hidden = Number(panel.dataset.stepIndex) !== index;
+      });
+      if (index === RESULT_INDEX) renderSummary();
+      updateFooter();
+      updateProgress();
+      const activePanel = panels.find((panel) => Number(panel.dataset.stepIndex) === index);
+      const heading = activePanel?.querySelector<HTMLElement>("h3");
+      if (heading) {
+        heading.setAttribute("tabindex", "-1");
+        heading.focus();
+      }
+    }
+
+    function showStep(index: number, animate: boolean) {
+      if (!animate || reduceMotion) {
+        applyStep(index);
+        return;
+      }
+      panelsWrapper!.classList.add("diag-panels--transitioning");
+      window.setTimeout(() => {
+        applyStep(index);
+        requestAnimationFrame(() => panelsWrapper!.classList.remove("diag-panels--transitioning"));
+      }, 160);
+    }
+
+    function goToStep(index: number) {
+      showStep(Math.max(0, Math.min(index, RESULT_INDEX)), true);
+    }
+
+    panels.forEach((panel) => {
+      const stepIndex = Number(panel.dataset.stepIndex);
+      const step = diagnosticSteps[stepIndex];
+      if (!step) return;
+
+      panel.querySelectorAll<HTMLButtonElement>("[data-diag-option]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const value = btn.dataset.value ?? "";
+          if (step.multiSelect) toggleAreaAnswer(value);
+          else setSingleAnswer(step, value);
+          renderOptionsState(panel, step);
+          updateFooter();
+        });
+      });
+    });
+
+    openBtn.addEventListener("click", () => {
+      dialog.showModal();
+      showStep(currentIndex, false);
+    });
+
+    closeBtn.addEventListener("click", () => dialog.close());
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+
+    backBtn.addEventListener("click", () => goToStep(currentIndex - 1));
+    nextBtn.addEventListener("click", () => goToStep(currentIndex + 1));
+  }
+</script>
+
+<style>
+  .diagnostic-teaser__grid {
+    display: grid;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .diagnostic-teaser__visual {
+    max-width: 22rem;
+  }
+
+  .diagnostic-teaser__body p {
+    margin-bottom: var(--space-3);
+  }
+
+  .diag-dialog {
+    border: none;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    background: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  .diag-dialog::backdrop {
+    background: rgba(42, 36, 32, 0.55);
+  }
+
+  .diag-dialog[open] {
+    display: flex;
+  }
+
+  .diag-dialog__inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding: var(--space-2);
+    overflow: hidden;
+  }
+
+  .diag-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  .diag-progress {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .diag-progress__track {
+    flex: 1;
+    height: 4px;
+    background: var(--color-line);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+
+  .diag-progress__fill {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: var(--color-accent);
+    transition: width var(--motion-quick) var(--ease-reveal);
+  }
+
+  .diag-progress__label {
+    font-size: var(--size-small);
+    color: var(--color-muted);
+    white-space: nowrap;
+  }
+
+  .diag-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.4em;
+    color: var(--color-ink);
+    flex-shrink: 0;
+    display: inline-flex;
+  }
+
+  .diag-panels {
+    flex: 1;
+    overflow-y: auto;
+    padding-block: var(--space-2);
+    transition: opacity var(--motion-quick) var(--ease-reveal), transform var(--motion-quick) var(--ease-reveal);
+  }
+
+  .diag-panels--transitioning {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  .diag-panel__question {
+    margin-bottom: var(--space-3);
+  }
+
+  .diag-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .diag-option {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: left;
+    padding: var(--space-2);
+    border: 1.5px solid var(--color-line);
+    border-radius: var(--radius-control);
+    background: var(--color-canvas);
+    cursor: pointer;
+    transition: border-color var(--motion-instant) var(--ease-reveal),
+      background-color var(--motion-instant) var(--ease-reveal);
+  }
+
+  .diag-option:hover {
+    border-color: var(--color-putty);
+  }
+
+  .diag-option--selected {
+    border-color: var(--color-accent);
+    background: var(--color-surface);
+  }
+
+  .diag-option__icon {
+    flex-shrink: 0;
+    color: var(--color-accent);
+  }
+
+  .diag-option__label {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .diag-option__indicator {
+    flex-shrink: 0;
+    width: 0.7rem;
+    height: 0.7rem;
+    border: 1.5px solid var(--color-accent);
+    transition: background-color var(--motion-instant) var(--ease-reveal);
+  }
+
+  .diag-option--selected .diag-option__indicator {
+    background: var(--color-accent);
+  }
+
+  .diag-size-swatch {
+    display: inline-block;
+    background: var(--color-accent-ochre);
+    border-radius: var(--radius-sharp);
+    flex-shrink: 0;
+  }
+
+  .diag-size-swatch--small {
+    width: 14px;
+    height: 14px;
+  }
+
+  .diag-size-swatch--medium {
+    width: 22px;
+    height: 22px;
+  }
+
+  .diag-size-swatch--large {
+    width: 30px;
+    height: 30px;
+  }
+
+  .diag-size-swatch--full {
+    width: 30px;
+    height: 18px;
+    border-radius: var(--radius-control);
+  }
+
+  .diag-finish-swatch {
+    display: inline-block;
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-pill);
+    flex-shrink: 0;
+  }
+
+  .diag-finish-swatch--matte {
+    background: var(--color-accent-ochre);
+  }
+
+  .diag-finish-swatch--satin {
+    background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.55), var(--color-accent-ochre) 65%);
+  }
+
+  .diag-finish-swatch--gloss {
+    background: radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.9), var(--color-accent-ochre) 45%);
+    box-shadow: var(--shadow-warm-soft);
+  }
+
+  .diag-finish-swatch--unknown {
+    background: var(--color-canvas);
+    border: 1.5px dashed var(--color-putty);
+  }
+
+  .diag-summary {
+    list-style: none;
+    margin: 0 0 var(--space-3);
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+
+  .diag-summary__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-1) var(--space-2);
+    padding-bottom: var(--space-1);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .diag-summary__question {
+    flex: 1 1 12rem;
+    font-size: var(--size-small);
+    color: var(--color-muted);
+  }
+
+  .diag-summary__value {
+    font-weight: 500;
+  }
+
+  .diag-summary__edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-size: var(--size-small);
+    padding: 0;
+  }
+
+  .diag-recommendation {
+    background: var(--color-canvas);
+    padding: var(--space-2);
+    border-radius: var(--radius-control);
+    margin-bottom: var(--space-3);
+  }
+
+  .diag-conversion h4 {
+    font-family: var(--font-display);
+    font-size: var(--size-h3);
+    margin-bottom: var(--space-2);
+  }
+
+  .diag-conversion__actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .diag-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-top: var(--space-2);
+    border-top: 1px solid var(--color-line);
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 560px) {
+    .diag-options {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .diag-options--compact {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .diag-conversion__actions {
+      flex-direction: row;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .diagnostic-teaser__grid {
+      grid-template-columns: 1fr 1.3fr;
+    }
+
+    .diag-dialog {
+      width: min(700px, 92vw);
+      height: auto;
+      max-height: 85dvh;
+      border-radius: var(--radius-frame);
+      margin: auto;
+    }
+
+    .diag-dialog__inner {
+      padding: var(--space-4);
+    }
+  }
+</style>
