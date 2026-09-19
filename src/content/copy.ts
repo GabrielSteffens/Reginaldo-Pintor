@@ -15,7 +15,7 @@ export const nav = {
     { href: "#transformacao", label: "Transformação" },
     { href: "#processo", label: "Como funciona" },
     { href: "#portfolio", label: "Portfólio" },
-    { href: "#ideias-de-cores", label: "Ideias de Cores" },
+    { href: "#paleta-de-cores", label: "Paleta de Cores" },
     { href: "#diagnostico", label: "Diagnóstico" },
     { href: "#faq", label: "Dúvidas" },
   ],
@@ -177,23 +177,41 @@ export const quoteWizard = {
   },
 };
 
-export const colorSimulator = {
-  badge: "Simulador de Fachada",
-  heading: "Ideias de Cores",
+export const colorPalettes = {
+  badge: "Catálogos Oficiais",
+  heading: "Paleta de Cores",
   intro:
-    "Experimente combinações harmoniosas para paredes, molduras, esquadrias e portões antes de iniciar sua pintura.",
-  areaSelectorHeading: "Escolha o que você quer mudar",
-  paletteHeading: "Cores residenciais selecionadas",
-  presetsHeading: "Combinações recomendadas",
-  smartHeading: "Combinações que podem funcionar bem",
-  resetLabel: "Resetar cores",
-  applyPresetLabel: "Aplicar combinação",
-  likedCombinationLabel: "Gostei dessa combinação",
-  quoteWithColorsLabel: "Solicitar orçamento com essas cores",
-  summaryTitle: "Minha combinação para a fachada",
-  disclaimer:
-    "As cores exibidas na tela são apenas uma referência visual. A aparência pode variar conforme iluminação, acabamento, superfície e tonalidade real da tinta.",
-  conversionHeading: "Encontrou a combinação ideal para sua casa?",
+    "Explore as ferramentas oficiais de cores das duas principais fabricantes do Brasil. Escolha os tons perfeitos para suas paredes internas e fachadas.",
+  tipTitle: "Consultoria e amostras reais na visita técnica",
+  tipText:
+    "O Reginaldo trabalha com tintas de primeira linha (Suvinil, Coral e equivalentes) e pode levar mostruários físicos com amostras reais durante a visita de orçamento para avaliar o tom sob a iluminação natural da sua casa.",
+  brands: [
+    {
+      id: "suvinil",
+      name: "Suvinil",
+      tagline: "Leque de Cores Suvinil",
+      category: "Verdes, Neutros, Terrosos e Coleções",
+      description:
+        "Acesse a paleta oficial da Suvinil com milhares de tons divididos por famílias (como a famosa seleção de Verdes e Naturais), tendências do ano e códigos exatos de tinta.",
+      url: "https://www.suvinil.com.br/paleta-de-cores/verdes",
+      image: "/images/paletas/suvinil-paleta.jpg",
+      buttonLabel: "Explorar paleta Suvinil",
+    },
+    {
+      id: "coral",
+      name: "Coral",
+      tagline: "Paletas de Cor Coral",
+      category: "Tendências, Neutros e Cores do Ano",
+      description:
+        "Consulte o catálogo interativo da Coral com inspirações para ambientes residenciais, combinações por harmonia e o catálogo completo da Cor do Ano.",
+      url: "https://www.coral.com.br/pt/paletas-de-cor",
+      image: "/images/paletas/coral-paleta.jpg",
+      buttonLabel: "Explorar paleta Coral",
+    },
+  ],
+  ctaHeading: "Já escolheu a sua cor ou quer ajuda profissional?",
+  ctaText:
+    "Envie o nome ou código da cor no seu orçamento ou converse com o Reginaldo para definir a melhor combinação para a sua casa.",
   primaryCtaLabel: "Solicitar orçamento",
   secondaryCtaLabel: "Falar com o Reginaldo",
 };

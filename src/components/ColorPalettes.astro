@@ -1,0 +1,346 @@
+---
+// src/components/ColorPalettes.astro
+import Icon from "./Icon.astro";
+import { colorPalettes } from "../content/copy";
+import { whatsappHref } from "../utils/whatsapp";
+
+const contactWhatsAppHref = whatsappHref("Olá, Reginaldo! Gostaria de tirar dúvidas sobre as cores da Suvinil e Coral para minha casa.");
+---
+
+<section id="paleta-de-cores" class="section section--surface color-palettes">
+  <div class="container">
+    <!-- Header -->
+    <div class="palettes__header">
+      <span class="chip palettes__badge">
+        <span class="chip__swatch chip__swatch--ochre"></span>
+        <span>{colorPalettes.badge}</span>
+      </span>
+      <h2>{colorPalettes.heading}</h2>
+      <p class="palettes__intro">{colorPalettes.intro}</p>
+    </div>
+
+    <!-- On-site sample advice box -->
+    <div class="palettes__tip">
+      <div class="palettes__tip-icon">
+        <Icon name="brush" size={26} />
+      </div>
+      <div class="palettes__tip-body">
+        <h4>{colorPalettes.tipTitle}</h4>
+        <p>{colorPalettes.tipText}</p>
+      </div>
+    </div>
+
+    <!-- Brand Cards Grid (Suvinil & Coral) -->
+    <div class="palettes__grid">
+      {colorPalettes.brands.map((brand) => (
+        <article class="brand-card">
+          <!-- Real Browser Mockup Preview Image -->
+          <a
+            href={brand.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="brand-card__image-link"
+            aria-label={`Abrir catálogo da ${brand.name} em nova aba`}
+          >
+            <div class="brand-card__image-wrap">
+              <img
+                src={brand.image}
+                alt={`Prévia da ferramenta de paleta de cores da ${brand.name}`}
+                loading="lazy"
+                width="640"
+                height="360"
+                class="brand-card__img"
+              />
+              <span class="brand-card__overlay-hint">
+                <span>Abrir catálogo oficial</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </span>
+            </div>
+          </a>
+
+          <!-- Brand Information & CTA -->
+          <div class="brand-card__body">
+            <div class="brand-card__meta">
+              <span class="brand-card__category">{brand.category}</span>
+              <h3 class="brand-card__title">{brand.tagline}</h3>
+            </div>
+            
+            <p class="brand-card__desc">{brand.description}</p>
+
+            <div class="brand-card__action">
+              <a
+                href={brand.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn--primary brand-card__btn"
+              >
+                <span>{brand.buttonLabel}</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+
+    <!-- Bottom Conversion Box -->
+    <div class="palettes__cta">
+      <div class="palettes__cta-text">
+        <h3>{colorPalettes.ctaHeading}</h3>
+        <p>{colorPalettes.ctaText}</p>
+      </div>
+      <div class="palettes__cta-actions">
+        <a href="#contato" class="btn btn--primary">
+          <Icon name="clipboard" size={20} />
+          <span>{colorPalettes.primaryCtaLabel}</span>
+        </a>
+        <a href={contactWhatsAppHref} target="_blank" rel="noopener noreferrer" class="btn btn--secondary">
+          <Icon name="whatsapp" size={20} />
+          <span>{colorPalettes.secondaryCtaLabel}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .color-palettes {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .palettes__header {
+    text-align: center;
+    max-width: 44rem;
+    margin-inline: auto;
+    margin-bottom: var(--space-4);
+  }
+
+  .palettes__badge {
+    margin-bottom: var(--space-2);
+  }
+
+  .palettes__header h2 {
+    font-size: var(--size-h2);
+    color: var(--color-ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .palettes__intro {
+    font-size: var(--size-body);
+    color: var(--color-muted);
+    margin-inline: auto;
+  }
+
+  /* Physical Fan Deck Tip Box */
+  .palettes__tip {
+    max-width: 52rem;
+    margin-inline: auto;
+    margin-bottom: var(--space-5);
+    background: #fdf8eb;
+    border: 1px solid #ebd9a9;
+    border-radius: var(--radius-frame);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .palettes__tip-icon {
+    color: var(--color-accent-ochre);
+    flex-shrink: 0;
+  }
+
+  .palettes__tip-body h4 {
+    font-size: 1rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--color-ink);
+    margin: 0 0 0.25rem;
+  }
+
+  .palettes__tip-body p {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+    margin: 0;
+    max-width: 100%;
+    line-height: 1.5;
+  }
+
+  /* Brands Grid */
+  .palettes__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .palettes__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-5);
+    }
+  }
+
+  /* Brand Card */
+  .brand-card {
+    background: #ffffff;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-frame);
+    overflow: hidden;
+    box-shadow: var(--shadow-warm-soft);
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--motion-instant) var(--ease-reveal),
+                box-shadow var(--motion-instant) var(--ease-reveal),
+                border-color var(--motion-instant) var(--ease-reveal);
+  }
+
+  .brand-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-warm);
+    border-color: var(--color-accent);
+  }
+
+  /* Image Wrap with subtle zoom & hover badge */
+  .brand-card__image-link {
+    display: block;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    background: var(--color-canvas);
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .brand-card__image-wrap {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+  }
+
+  .brand-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform var(--motion-quick) var(--ease-reveal);
+  }
+
+  .brand-card:hover .brand-card__img {
+    transform: scale(1.03);
+  }
+
+  .brand-card__overlay-hint {
+    position: absolute;
+    bottom: var(--space-2);
+    right: var(--space-2);
+    background: rgba(42, 36, 32, 0.88);
+    color: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    backdrop-filter: blur(4px);
+    transition: background-color var(--motion-instant) var(--ease-reveal);
+  }
+
+  .brand-card:hover .brand-card__overlay-hint {
+    background: var(--color-accent);
+  }
+
+  /* Card Body */
+  .brand-card__body {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  .brand-card__category {
+    font-size: 0.8rem;
+    color: var(--color-accent);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .brand-card__title {
+    font-size: var(--size-h3);
+    color: var(--color-ink);
+    margin: 0 0 0.5rem;
+  }
+
+  .brand-card__desc {
+    font-size: 0.95rem;
+    color: var(--color-muted);
+    line-height: 1.55;
+    margin-bottom: var(--space-4);
+    max-width: 100%;
+  }
+
+  .brand-card__action {
+    margin-top: auto;
+  }
+
+  .brand-card__btn {
+    width: 100%;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  /* Bottom Conversion Card */
+  .palettes__cta {
+    background: #ffffff;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-frame);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: center;
+    text-align: center;
+    box-shadow: var(--shadow-warm-soft);
+  }
+
+  @media (min-width: 900px) {
+    .palettes__cta {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+      padding: var(--space-4) var(--space-5);
+    }
+  }
+
+  .palettes__cta-text h3 {
+    margin: 0 0 0.25rem;
+    font-size: var(--size-h3);
+  }
+
+  .palettes__cta-text p {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: var(--size-body);
+  }
+
+  .palettes__cta-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: center;
+  }
+</style>
