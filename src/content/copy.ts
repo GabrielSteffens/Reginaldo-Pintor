@@ -108,10 +108,10 @@ export const whyProfessional = {
 };
 
 export const serviceAreas = {
-  badge: "Grande Florianópolis • SC",
+  badge: "São José e Região Metropolitana • SC",
   heading: "Área de Atendimento",
   intro:
-    "Atendimento residencial especializado em Florianópolis, São José, Palhoça e Biguaçu. Levamos acabamento refinado, proteção do seu espaço e pontualidade até a sua casa.",
+    "Atendimento residencial especializado em São José, Florianópolis, Palhoça e Biguaçu. Levamos acabamento refinado, proteção do seu espaço e pontualidade até a sua casa.",
   emptyMessage: "A lista de cidades atendidas será confirmada em breve.",
   ctaLabel: "Mora em outra cidade ou condomínio vizinho? Fale conosco no WhatsApp",
   openInMaps: "Abrir no Google Maps",

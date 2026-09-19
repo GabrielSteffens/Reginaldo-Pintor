@@ -93,16 +93,16 @@ export const businessConfig: BusinessConfig = {
 
   address: {
     showPublicly: false,
-    city: "Florianópolis",
+    city: "São José",
     state: "SC",
   },
 
   // Base city/region for metadata and copy
-  city: "Florianópolis e Região",
+  city: "São José e Região",
   // Confirmed cities/regions served
   neighborhoods: [
-    "Florianópolis",
     "São José",
+    "Florianópolis",
     "Palhoça",
     "Biguaçu",
   ],
