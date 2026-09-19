@@ -167,6 +167,10 @@ const neighborhoods = businessConfig.neighborhoods;
         <div class="qw-callout__content">
           <h4>{quoteWizard.colorAdviceTip}</h4>
           <p>Durante a avaliação no local, avaliamos a iluminação natural dos cômodos e apresentamos amostras reais de acabamentos fosco e acetinado.</p>
+          <a href="#ideias-de-cores" class="qw-callout__link">
+            <span>Experimentar combinações no simulador de cores</span>
+            <span aria-hidden="true">&rarr;</span>
+          </a>
         </div>
       </div>
     </section>
@@ -934,6 +938,21 @@ const neighborhoods = businessConfig.neighborhoods;
     font-size: 0.85rem;
     color: var(--color-muted);
     margin: 0;
+  }
+
+  .qw-callout__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--color-accent);
+    font-weight: 600;
+    margin-top: 0.5rem;
+    text-decoration: underline;
+  }
+
+  .qw-callout__link:hover {
+    color: var(--color-accent-hover);
   }
 
   /* Form Fields */

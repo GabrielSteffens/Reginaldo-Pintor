@@ -15,6 +15,7 @@ export const nav = {
     { href: "#transformacao", label: "Transformação" },
     { href: "#processo", label: "Como funciona" },
     { href: "#portfolio", label: "Portfólio" },
+    { href: "#ideias-de-cores", label: "Ideias de Cores" },
     { href: "#diagnostico", label: "Diagnóstico" },
     { href: "#faq", label: "Dúvidas" },
   ],
@@ -174,5 +175,26 @@ export const quoteWizard = {
     colors: "Cores",
     contact: "Contato e Região",
   },
+};
+
+export const colorSimulator = {
+  badge: "Simulador de Fachada",
+  heading: "Ideias de Cores",
+  intro:
+    "Experimente combinações harmoniosas para paredes, molduras, esquadrias e portões antes de iniciar sua pintura.",
+  areaSelectorHeading: "Escolha o que você quer mudar",
+  paletteHeading: "Cores residenciais selecionadas",
+  presetsHeading: "Combinações recomendadas",
+  smartHeading: "Combinações que podem funcionar bem",
+  resetLabel: "Resetar cores",
+  applyPresetLabel: "Aplicar combinação",
+  likedCombinationLabel: "Gostei dessa combinação",
+  quoteWithColorsLabel: "Solicitar orçamento com essas cores",
+  summaryTitle: "Minha combinação para a fachada",
+  disclaimer:
+    "As cores exibidas na tela são apenas uma referência visual. A aparência pode variar conforme iluminação, acabamento, superfície e tonalidade real da tinta.",
+  conversionHeading: "Encontrou a combinação ideal para sua casa?",
+  primaryCtaLabel: "Solicitar orçamento",
+  secondaryCtaLabel: "Falar com o Reginaldo",
 };
 
