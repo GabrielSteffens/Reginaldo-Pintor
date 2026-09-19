@@ -182,9 +182,6 @@ export const colorPalettes = {
   heading: "Paleta de Cores",
   intro:
     "Explore as ferramentas oficiais de cores das duas principais fabricantes do Brasil. Escolha os tons perfeitos para suas paredes internas e fachadas.",
-  tipTitle: "Consultoria e amostras reais na visita técnica",
-  tipText:
-    "O Reginaldo trabalha com tintas de primeira linha (Suvinil, Coral e equivalentes) e pode levar mostruários físicos com amostras reais durante a visita de orçamento para avaliar o tom sob a iluminação natural da sua casa.",
   brands: [
     {
       id: "suvinil",

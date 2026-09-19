@@ -19,17 +19,6 @@ const contactWhatsAppHref = whatsappHref("Olá, Reginaldo! Gostaria de tirar dú
       <p class="palettes__intro">{colorPalettes.intro}</p>
     </div>
 
-    <!-- On-site sample advice box -->
-    <div class="palettes__tip">
-      <div class="palettes__tip-icon">
-        <Icon name="brush" size={26} />
-      </div>
-      <div class="palettes__tip-body">
-        <h4>{colorPalettes.tipTitle}</h4>
-        <p>{colorPalettes.tipText}</p>
-      </div>
-    </div>
-
     <!-- Brand Cards Grid (Suvinil & Coral) -->
     <div class="palettes__grid">
       {colorPalettes.brands.map((brand) => (
@@ -139,41 +128,6 @@ const contactWhatsAppHref = whatsappHref("Olá, Reginaldo! Gostaria de tirar dú
     font-size: var(--size-body);
     color: var(--color-muted);
     margin-inline: auto;
-  }
-
-  /* Physical Fan Deck Tip Box */
-  .palettes__tip {
-    max-width: 52rem;
-    margin-inline: auto;
-    margin-bottom: var(--space-5);
-    background: #fdf8eb;
-    border: 1px solid #ebd9a9;
-    border-radius: var(--radius-frame);
-    padding: var(--space-3) var(--space-4);
-    display: flex;
-    gap: var(--space-3);
-    align-items: center;
-  }
-
-  .palettes__tip-icon {
-    color: var(--color-accent-ochre);
-    flex-shrink: 0;
-  }
-
-  .palettes__tip-body h4 {
-    font-size: 1rem;
-    font-family: var(--font-body);
-    font-weight: 600;
-    color: var(--color-ink);
-    margin: 0 0 0.25rem;
-  }
-
-  .palettes__tip-body p {
-    font-size: 0.9rem;
-    color: var(--color-muted);
-    margin: 0;
-    max-width: 100%;
-    line-height: 1.5;
   }
 
   /* Brands Grid */
